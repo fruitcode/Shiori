@@ -48,6 +48,13 @@ namespace Shiori
             player.GetStreamInfo(ref i);
             currentDuration = i.Length.sec;
 
+            // TODO: check if ID3v2 is available (also read info for AAC and OGG files)
+            TID3Info i3 = new TID3Info();
+            player.LoadID3(TID3Version.id3Version2, ref i3);
+            InfoLabelArtist.Content = i3.Artist;
+            InfoLabelAlbum.Content = i3.Album;
+            InfoLabelTitle.Content = i3.Title;
+
             player.StartPlayback();
 
             timer = new Timer(MyTimerCallback, null, 0, 500);
