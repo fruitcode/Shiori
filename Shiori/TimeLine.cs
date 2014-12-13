@@ -17,12 +17,14 @@ namespace Shiori
 {
     public class TimeLine : Control
     {
-        private Boolean isSeeking = false;
+        private Boolean seekingMode = false;
+        private Boolean allowBarUpdate = true;
         public static readonly DependencyProperty BarWidthProperty = DependencyProperty.Register("BarWidth", typeof(int), typeof(TimeLine), new PropertyMetadata(10));
         public int BarWidth {
             get { return (int)GetValue(BarWidthProperty); }
             set { SetValue(BarWidthProperty, value); }
         }
+        private int oldBarWidth;
         
         static TimeLine()
         {
@@ -32,31 +34,45 @@ namespace Shiori
         protected override void OnMouseMove(MouseEventArgs e)
         {
             //base.OnMouseMove(e);
-            if (isSeeking)
+            if (seekingMode)
             {
                 if (e.LeftButton == MouseButtonState.Pressed)
                     FillProgress(e.GetPosition(this).X);
                 else
-                    isSeeking = false;
+                    seekingMode = false;
             }
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            //base.OnMouseLeftButtonDown(e);
-            isSeeking = true;
+            seekingMode = true;
+            allowBarUpdate = false;
+
+            oldBarWidth = BarWidth;
             FillProgress(e.GetPosition(this).X);
         }
 
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
-            //base.OnMouseLeftButtonUp(e);
-            isSeeking = false;
+            seekingMode = false;
+            // TODO: execute callback OnPositionChanged(TimeSpan newPosition)
+            allowBarUpdate = true;
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            //base.OnMouseLeave(e);
+            if (seekingMode)
+            {
+                allowBarUpdate = true;
+                // TODO: set actual value
+                FillProgress(oldBarWidth);
+            }
         }
 
         private void FillProgress(double p)
         {
-            BarWidth = (Int16)p;
+            BarWidth = (int)p;
         }
     }
 }
