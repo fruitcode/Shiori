@@ -27,10 +27,14 @@ namespace Shiori
     public partial class MainWindow : Window
     {
         private Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
+
         ZPlay player;
-        uint currentDuration;
+        //uint currentDuration;
         String currentFileName;
         Timer timer;
+
+        AudioMetadata metadata;
+        List<Border> bookmarksDashes;
 
         KeyboardHook globalHotkeys;
 
@@ -39,19 +43,24 @@ namespace Shiori
             InitializeComponent();
 
             this.Loaded += MainWindow_Loaded;
+            this.SizeChanged += MainWindow_SizeChanged;
             this.Closing += MainWindow_Closing;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            currentFileName = "F:\\gp.aac";
+            currentFileName = "F:\\fry.mp3";
+            bookmarksDashes = new List<Border>();
 
             player = new ZPlay();
             player.OpenFile(currentFileName, TStreamFormat.sfAutodetect);
 
             TStreamInfo i = new TStreamInfo();
             player.GetStreamInfo(ref i);
-            currentDuration = i.Length.sec;
+            metadata = new AudioMetadata(i.Length.sec);
+
+            AddBookmark(0);
+            AddBookmark(60);
 
             ReadID3Info();
 
@@ -65,7 +74,9 @@ namespace Shiori
             globalHotkeys = new KeyboardHook();
             globalHotkeys.KeyPressed += GlobalHotKeyPressed;
             if ( !(globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.J) &&
-                   globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.K) ))
+                   globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.K) &&
+                   globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.H) &&
+                   globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.M) ))
             {
                 MessageBox.Show("Unable to register global hotkeys", "Error");
             }
@@ -84,6 +95,17 @@ namespace Shiori
                     t = new TStreamTime() { sec = 10 };
                     player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromCurrentForward);
                     break;
+                case Key.M:
+                    t = new TStreamTime();
+                    player.GetPosition(ref t);
+                    AddBookmark((int)t.sec);
+                    break;
+                case Key.H:
+                    t = new TStreamTime();
+                    player.GetPosition(ref t);
+                    TStreamTime t2 = metadata.GetPreviousBookmark(t);
+                    player.Seek(TTimeFormat.tfSecond, ref t2, TSeekMethod.smFromBeginning);
+                    break;
                 default:
                     break;
             }
@@ -96,7 +118,7 @@ namespace Shiori
 
         void myTimeLine_PositionChanged(object sender, PositionChangedEventArgs e)
         {
-            TStreamTime newPos = new TStreamTime() { sec = (uint)(currentDuration * e.NewValue) };
+            TStreamTime newPos = new TStreamTime() { sec = (uint)(metadata.Duration * e.NewValue) };
             player.Seek(TTimeFormat.tfSecond, ref newPos, TSeekMethod.smFromBeginning);
         }
 
@@ -108,7 +130,7 @@ namespace Shiori
             _dispatcher.BeginInvoke(
                 DispatcherPriority.Normal, new Action(() =>
                 {
-                    myTimeLine.Value = t.sec / (double)currentDuration ;
+                    myTimeLine.Value = t.sec / (double)metadata.Duration;
                 }
             ));
         }
@@ -139,6 +161,73 @@ namespace Shiori
                 InfoLabelAlbum.Content = (new FileInfo(currentFileName)).Name;
                 InfoLabelTitle.Content = "-";
             }
+        }
+
+        private void AddBookmark(int t)
+        {
+            metadata.Bookmarks.Add(t);
+            double p = t / (double)metadata.Duration;
+
+            Border border = new Border()
+            {
+                Width = 2,
+                Height = 6,
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Left,
+                Margin = new Thickness(myTimeLine.ActualWidth * p - 1, 2, 0, 2),
+                BorderThickness = new Thickness(1, 0, 1, 0),
+                BorderBrush = new SolidColorBrush(Colors.Black),
+                SnapsToDevicePixels = true,
+                Tag = p
+            };
+            Grid.SetRow(border, 0);
+
+            bookmarksDashes.Add(border);
+            TimeLineGrid.Children.Add(border);
+        }
+
+        void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (bookmarksDashes == null)
+                return;
+
+            double p;
+            Thickness t;
+            foreach (var b in bookmarksDashes)
+            {
+                p = (double)b.Tag;
+                t = b.Margin;
+                t.Left = myTimeLine.ActualWidth * p - 1;
+                b.Margin = t;
+            }
+        }
+    }
+
+    public class AudioMetadata
+    {
+        public List<int> Bookmarks = new List<int>();
+        public uint Duration = 0;
+
+        public AudioMetadata()
+        {
+
+        }
+
+        public AudioMetadata(uint duration)
+        {
+            Duration = duration;
+        }
+
+        public TStreamTime GetPreviousBookmark(TStreamTime t)
+        {
+            int max = 0;
+            int current = (int)t.sec - 1; // minus one second, to leave a time to skip to previous bookmark when double-clicking 'back' button
+
+            foreach (var i in Bookmarks)
+            {
+                if (i > max && i < current)
+                    max = i;
+            }
+            return new TStreamTime() { sec = (uint)max };
         }
     }
 }

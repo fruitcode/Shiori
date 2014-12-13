@@ -22,12 +22,12 @@
         </Grid>
         
         
-        <Grid Grid.Row="1" Margin="0 4 0 4">
+        <Grid Grid.Row="1" Margin="0 4 0 4" x:Name="TimeLineGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="0" BorderThickness="1 0 1 0" BorderBrush="Black" Width="2" Height="6" HorizontalAlignment="Left" Margin="0 2 0 2"/>
+            <!--<Border Grid.Row="0" BorderThickness="1 0 1 0" BorderBrush="Black" Width="2" Height="6" HorizontalAlignment="Left" Margin="0 2 0 2"/>-->
             <Shiori:TimeLine x:Name="myTimeLine" Grid.Row="1"/>
         </Grid>
         
