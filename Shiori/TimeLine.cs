@@ -20,7 +20,7 @@ namespace Shiori
         private Boolean seekingMode = false;
         private Boolean allowBarUpdate = true;
 
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(double), typeof(TimeLine), new PropertyMetadata(0.0));
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(double), typeof(TimeLine), new PropertyMetadata(0.2));
         public double Value
         {
             get { return (double)GetValue(ValueProperty); }
@@ -28,16 +28,16 @@ namespace Shiori
             {
                 if (allowBarUpdate)
                 {
-                    FillProgress(this.ActualWidth * value);
+                    BarValue = value;
                 }
                 SetValue(ValueProperty, value);
             }
         }
 
-        public static readonly DependencyProperty BarWidthProperty = DependencyProperty.Register("BarWidth", typeof(int), typeof(TimeLine), new PropertyMetadata(10));
-        public int BarWidth {
-            get { return (int)GetValue(BarWidthProperty); }
-            set { SetValue(BarWidthProperty, value); }
+        public static readonly DependencyProperty BarValueProperty = DependencyProperty.Register("BarValue", typeof(double), typeof(TimeLine), new PropertyMetadata(0.2));
+        public double BarValue {
+            get { return (double)GetValue(BarValueProperty); }
+            set { SetValue(BarValueProperty, value); }
         }
         
         static TimeLine()
@@ -53,7 +53,7 @@ namespace Shiori
                 {
                     if (allowBarUpdate) // we've returned from outside and we should stop updating bar again
                         allowBarUpdate = false;
-                    FillProgress(e.GetPosition(this).X);
+                    BarValue = e.GetPosition(this).X / this.ActualWidth;
                 }
                 else
                 {
@@ -67,7 +67,7 @@ namespace Shiori
             seekingMode = true;
             allowBarUpdate = false;
 
-            FillProgress(e.GetPosition(this).X);
+            BarValue = e.GetPosition(this).X / this.ActualWidth;
         }
 
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
@@ -82,13 +82,8 @@ namespace Shiori
             if (seekingMode)
             {
                 allowBarUpdate = true;
-                Value = Value; // set current value and update progress bar using this value
+                BarValue = Value;
             }
-        }
-
-        private void FillProgress(double p)
-        {
-            BarWidth = (int)p;
         }
     }
 }

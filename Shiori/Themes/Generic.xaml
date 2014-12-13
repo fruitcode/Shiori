@@ -8,17 +8,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:TimeLine}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="14"/>
-                        </Grid.RowDefinitions>
-                        <Rectangle Grid.Row="1" Fill="Transparent"/>
-                        <Rectangle Grid.Row="1" Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Width="{Binding BarWidth, RelativeSource={RelativeSource TemplatedParent}}" HorizontalAlignment="Left"/>
-                        <Border Grid.Row="1" BorderThickness="1 1 0 0" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"/>
-                        <Border Grid.Row="1" BorderThickness="0 0 1 1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}"/>
-                    </Grid>
-                    
+                    <ProgressBar Value="{Binding BarValue, RelativeSource={RelativeSource TemplatedParent}}" Maximum="1" SmallChange="0.01" LargeChange="0.1" MinHeight="14"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

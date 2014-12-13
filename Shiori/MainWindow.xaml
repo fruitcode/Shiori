@@ -4,15 +4,24 @@
         xmlns:Shiori="clr-namespace:Shiori"
         Title="Shiori" Height="450" Width="350"
         Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-    <Grid Margin="4">
+    <Grid Margin="6 4 6 6">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Content="Book Title" FontWeight="Bold"/>
-        <Shiori:TimeLine Grid.Row="1" x:Name="myTimeLine" Margin="0 4 0 4"/>
-        <!--<Slider Grid.Row="1" Margin="0 4 0 4"/>-->
+        <Label Grid.Row="0" Content="George Orwell - 1984" FontWeight="Bold" Padding="0 0 0 0"/>
+        
+        <Grid Grid.Row="1" Margin="0 4 0 4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" BorderThickness="1 0 1 0" BorderBrush="Black" Width="2" Height="6" HorizontalAlignment="Left" Margin="50 2 0 2"/>
+            <Border Grid.Row="0" BorderThickness="1 0 1 0" BorderBrush="Black" Width="2" Height="6" HorizontalAlignment="Left" Margin="0 2 0 2"/>
+            <Shiori:TimeLine x:Name="myTimeLine" Grid.Row="1"/>
+        </Grid>
+        
         <ListBox Grid.Row="2"/>
     </Grid>
 </Window>
