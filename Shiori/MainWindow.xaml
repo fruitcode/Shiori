@@ -1,6 +1,7 @@
 ﻿<Window x:Class="Shiori.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Shiori="clr-namespace:Shiori"
         Title="Shiori" Height="450" Width="350"
         Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
     <Grid Margin="4">
@@ -10,7 +11,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Content="Book Title" FontWeight="Bold"/>
-        <Slider Grid.Row="1" Margin="0 4 0 4"/>
+        <Shiori:TimeLine Grid.Row="1" Margin="0 4 0 4"/>
+        <!--<Slider Grid.Row="1" Margin="0 4 0 4"/>-->
         <ListBox Grid.Row="2"/>
     </Grid>
 </Window>
