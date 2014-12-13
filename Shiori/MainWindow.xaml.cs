@@ -53,7 +53,8 @@ namespace Shiori
 
         void myTimeLine_PositionChanged(object sender, PositionChangedEventArgs e)
         {
-            Console.WriteLine(e.NewValue);
+            TStreamTime newPos = new TStreamTime() { sec = (uint)(currentDuration * e.NewValue) };
+            player.Seek(TTimeFormat.tfSecond, ref newPos, TSeekMethod.smFromBeginning);
         }
 
         private void MyTimerCallback(object state)
