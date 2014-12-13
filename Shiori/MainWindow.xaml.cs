@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading; // timer
 using System.Windows.Threading; // dispather
+using libZPlay;
 
 namespace Shiori
 {
@@ -23,8 +24,9 @@ namespace Shiori
     public partial class MainWindow : Window
     {
         private Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
-
-        private Timer timer;
+        ZPlay player;
+        uint currentDuration;
+        Timer timer;
 
         public MainWindow()
         {
@@ -35,7 +37,17 @@ namespace Shiori
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            player = new ZPlay();
+            player.OpenFile("F:\\tr\\fry\\fry1\\fry_1_02.mp3", TStreamFormat.sfAutodetect);
+
+            TStreamInfo i = new TStreamInfo();
+            player.GetStreamInfo(ref i);
+            currentDuration = i.Length.sec;
+            
+            player.StartPlayback();
+
             timer = new Timer(MyTimerCallback, null, 0, 500);
+
             myTimeLine.PositionChanged += myTimeLine_PositionChanged;
         }
 
@@ -46,10 +58,13 @@ namespace Shiori
 
         private void MyTimerCallback(object state)
         {
+            TStreamTime t = new TStreamTime();
+            player.GetPosition(ref t);
+
             _dispatcher.BeginInvoke(
                 DispatcherPriority.Normal, new Action(() =>
                 {
-                    myTimeLine.Value += 0.01;
+                    myTimeLine.Value = t.sec / (double)currentDuration ;
                 }
             ));
         }
