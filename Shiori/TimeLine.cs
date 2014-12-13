@@ -20,6 +20,8 @@ namespace Shiori
         private Boolean seekingMode = false;
         private Boolean allowBarUpdate = true;
 
+        public event EventHandler<PositionChangedEventArgs> PositionChanged;
+
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(double), typeof(TimeLine), new PropertyMetadata(0.2));
         public double Value
         {
@@ -73,8 +75,11 @@ namespace Shiori
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             seekingMode = false;
-            // TODO: execute callback OnPositionChanged(TimeSpan newPosition)
             allowBarUpdate = true;
+
+            Value = e.GetPosition(this).X / this.ActualWidth;
+            PositionChangedEventArgs pce = new PositionChangedEventArgs() { NewValue = Value };
+            PositionChanged(this, pce);
         }
 
         protected override void OnMouseLeave(MouseEventArgs e)
@@ -85,5 +90,10 @@ namespace Shiori
                 BarValue = Value;
             }
         }
+    }
+
+    public class PositionChangedEventArgs : EventArgs
+    {
+        public double NewValue { get; set; }
     }
 }

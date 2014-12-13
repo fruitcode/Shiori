@@ -25,7 +25,6 @@ namespace Shiori
         private Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
 
         private Timer timer;
-        private double t = 0;
 
         public MainWindow()
         {
@@ -37,16 +36,20 @@ namespace Shiori
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             timer = new Timer(MyTimerCallback, null, 0, 500);
-            
+            myTimeLine.PositionChanged += myTimeLine_PositionChanged;
+        }
+
+        void myTimeLine_PositionChanged(object sender, PositionChangedEventArgs e)
+        {
+            Console.WriteLine(e.NewValue);
         }
 
         private void MyTimerCallback(object state)
         {
-            t += 0.5;
             _dispatcher.BeginInvoke(
                 DispatcherPriority.Normal, new Action(() =>
                 {
-                    myTimeLine.Value = t / 60.0;
+                    myTimeLine.Value += 0.01;
                 }
             ));
         }
