@@ -12,8 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+
 using System.Threading; // timer
 using System.Windows.Threading; // dispather
+using System.IO; // FileInfo
 using libZPlay;
 using Shiori.Lib;
 
@@ -27,6 +29,7 @@ namespace Shiori
         private Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
         ZPlay player;
         uint currentDuration;
+        String currentFileName;
         Timer timer;
 
         KeyboardHook globalHotkeys;
@@ -41,19 +44,16 @@ namespace Shiori
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            currentFileName = "F:\\gp.aac";
+
             player = new ZPlay();
-            player.OpenFile("F:\\fry.mp3", TStreamFormat.sfAutodetect);
+            player.OpenFile(currentFileName, TStreamFormat.sfAutodetect);
 
             TStreamInfo i = new TStreamInfo();
             player.GetStreamInfo(ref i);
             currentDuration = i.Length.sec;
 
-            // TODO: check if ID3v2 is available (also read info for AAC and OGG files)
-            TID3Info i3 = new TID3Info();
-            player.LoadID3(TID3Version.id3Version2, ref i3);
-            InfoLabelArtist.Content = i3.Artist;
-            InfoLabelAlbum.Content = i3.Album;
-            InfoLabelTitle.Content = i3.Title;
+            ReadID3Info();
 
             if (!player.StartPlayback())
                 Console.WriteLine("Unable to start playback: " + player.GetError());
@@ -111,6 +111,34 @@ namespace Shiori
                     myTimeLine.Value = t.sec / (double)currentDuration ;
                 }
             ));
+        }
+
+        private void ReadID3Info()
+        {
+            TID3Info i3 = new TID3Info();
+            player.LoadID3(TID3Version.id3Version2, ref i3);
+            
+
+            Boolean b1 = false, b2 = false, b3 = false;
+            if (i3.Artist != null && i3.Artist != "")
+                b1 = true;
+            if (i3.Album != null && i3.Album != "")
+                b2 = true;
+            if (i3.Title != null && i3.Title != "")
+                b3 = true;
+
+            if (b1 || b2 || b3)
+            {
+                InfoLabelArtist.Content = i3.Artist;
+                InfoLabelAlbum.Content = i3.Album;
+                InfoLabelTitle.Content = i3.Title;
+            }
+            else
+            {
+                InfoLabelArtist.Content = "-";
+                InfoLabelAlbum.Content = (new FileInfo(currentFileName)).Name;
+                InfoLabelTitle.Content = "-";
+            }
         }
     }
 }
