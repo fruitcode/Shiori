@@ -42,7 +42,7 @@ namespace Shiori
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             player = new ZPlay();
-            player.OpenFile("F:\\tr\\fry\\fry1\\fry_1_02.mp3", TStreamFormat.sfAutodetect);
+            player.OpenFile("F:\\fry.mp3", TStreamFormat.sfAutodetect);
 
             TStreamInfo i = new TStreamInfo();
             player.GetStreamInfo(ref i);
@@ -55,7 +55,8 @@ namespace Shiori
             InfoLabelAlbum.Content = i3.Album;
             InfoLabelTitle.Content = i3.Title;
 
-            player.StartPlayback();
+            if (!player.StartPlayback())
+                Console.WriteLine("Unable to start playback: " + player.GetError());
 
             timer = new Timer(MyTimerCallback, null, 0, 500);
 
@@ -63,19 +64,24 @@ namespace Shiori
 
             globalHotkeys = new KeyboardHook();
             globalHotkeys.KeyPressed += GlobalHotKeyPressed;
-            globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.J);
-            globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.K);
+            if ( !(globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.J) &&
+                   globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.K) ))
+            {
+                MessageBox.Show("Unable to register global hotkeys", "Error");
+            }
         }
 
         void GlobalHotKeyPressed(object sender, KeyPressedEventArgs e)
         {
-            TStreamTime t = new TStreamTime(){sec = 5};
+            TStreamTime t;
             switch (e.Key)
             {
                 case Key.J:
+                    t = new TStreamTime() { sec = 5 };
                     player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromCurrentBackward);
                     break;
                 case Key.K:
+                    t = new TStreamTime() { sec = 10 };
                     player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromCurrentForward);
                     break;
                 default:
