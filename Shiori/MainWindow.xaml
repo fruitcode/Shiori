@@ -11,7 +11,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Content="Book Title" FontWeight="Bold"/>
-        <Shiori:TimeLine Grid.Row="1" Margin="0 4 0 4"/>
+        <Shiori:TimeLine Grid.Row="1" x:Name="myTimeLine" Margin="0 4 0 4"/>
         <!--<Slider Grid.Row="1" Margin="0 4 0 4"/>-->
         <ListBox Grid.Row="2"/>
     </Grid>

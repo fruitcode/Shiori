@@ -19,12 +19,26 @@ namespace Shiori
     {
         private Boolean seekingMode = false;
         private Boolean allowBarUpdate = true;
+
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(double), typeof(TimeLine), new PropertyMetadata(0.0));
+        public double Value
+        {
+            get { return (double)GetValue(ValueProperty); }
+            set
+            {
+                if (allowBarUpdate)
+                {
+                    FillProgress(this.ActualWidth * value);
+                }
+                SetValue(ValueProperty, value);
+            }
+        }
+
         public static readonly DependencyProperty BarWidthProperty = DependencyProperty.Register("BarWidth", typeof(int), typeof(TimeLine), new PropertyMetadata(10));
         public int BarWidth {
             get { return (int)GetValue(BarWidthProperty); }
             set { SetValue(BarWidthProperty, value); }
         }
-        private int oldBarWidth;
         
         static TimeLine()
         {
@@ -33,13 +47,18 @@ namespace Shiori
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            //base.OnMouseMove(e);
             if (seekingMode)
             {
                 if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    if (allowBarUpdate) // we've returned from outside and we should stop updating bar again
+                        allowBarUpdate = false;
                     FillProgress(e.GetPosition(this).X);
+                }
                 else
+                {
                     seekingMode = false;
+                }
             }
         }
 
@@ -48,7 +67,6 @@ namespace Shiori
             seekingMode = true;
             allowBarUpdate = false;
 
-            oldBarWidth = BarWidth;
             FillProgress(e.GetPosition(this).X);
         }
 
@@ -61,12 +79,10 @@ namespace Shiori
 
         protected override void OnMouseLeave(MouseEventArgs e)
         {
-            //base.OnMouseLeave(e);
             if (seekingMode)
             {
                 allowBarUpdate = true;
-                // TODO: set actual value
-                FillProgress(oldBarWidth);
+                Value = Value; // set current value and update progress bar using this value
             }
         }
 
