@@ -78,6 +78,7 @@ namespace Shiori
                 globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.J);
                 globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.K);
                 globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.H);
+                globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.L);
                 globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.M);
             }
             catch
@@ -107,8 +108,14 @@ namespace Shiori
                 case Key.H:
                     t = new TStreamTime();
                     player.GetPosition(ref t);
-                    TStreamTime t2 = metadata.GetPreviousBookmark(t);
-                    player.Seek(TTimeFormat.tfSecond, ref t2, TSeekMethod.smFromBeginning);
+                    t = metadata.GetPreviousBookmark(t);
+                    player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromBeginning);
+                    break;
+                case Key.L:
+                    t = new TStreamTime();
+                    player.GetPosition(ref t);
+                    t = metadata.GetNextBookmark(t);
+                    player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromBeginning);
                     break;
                 default:
                     break;
@@ -223,15 +230,28 @@ namespace Shiori
 
         public TStreamTime GetPreviousBookmark(TStreamTime t)
         {
-            int max = 0;
-            int current = (int)t.sec - 1; // minus one second, to leave a time to skip to previous bookmark when double-clicking 'back' button
+            uint max = 0;
+            uint current = t.sec - 1; // minus one second, to leave a time to skip to previous bookmark when double-clicking 'back' button
 
             foreach (var i in Bookmarks)
             {
                 if (i > max && i < current)
-                    max = i;
+                    max = (uint)i;
             }
-            return new TStreamTime() { sec = (uint)max };
+            return new TStreamTime() { sec = max };
+        }
+
+        public TStreamTime GetNextBookmark(TStreamTime t)
+        {
+            uint min = Duration;
+            uint current = t.sec;
+
+            foreach (var i in Bookmarks)
+            {
+                if (i < min && i > current)
+                    min = (uint)i;
+            }
+            return new TStreamTime() { sec = min };
         }
     }
 }
