@@ -72,17 +72,15 @@ namespace Shiori.Lib
         /// </summary>
         /// <param name="modifier">The modifiers that are associated with the hot key.</param>
         /// <param name="key">The key itself that is associated with the hot key.</param>
-        public Boolean RegisterHotKey(KeyModifier modifier, Key key)
+        public void RegisterHotKey(KeyModifier modifier, Key key)
         {
             _currentId = _currentId + 1;
 
             // register the hot key.
             if (!RegisterHotKey(_window.hWnd, _currentId, (uint)modifier, (uint)KeyInterop.VirtualKeyFromKey(key)))
             {
-                return false;
-                //throw new InvalidOperationException("Couldn’t register the hot key.");
+                throw new InvalidOperationException("Couldn’t register the hot key.");
             }
-            return true;
         }
 
         #region IDisposable Members

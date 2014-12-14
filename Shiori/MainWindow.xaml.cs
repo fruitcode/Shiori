@@ -60,7 +60,6 @@ namespace Shiori
             metadata = new AudioMetadata(i.Length.sec);
 
             AddBookmark(0);
-            AddBookmark(60);
 
             ReadID3Info();
 
@@ -73,13 +72,18 @@ namespace Shiori
 
             globalHotkeys = new KeyboardHook();
             globalHotkeys.KeyPressed += GlobalHotKeyPressed;
-            if ( !(globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.J) &&
-                   globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.K) &&
-                   globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.H) &&
-                   globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.M) ))
+
+            try
+            {
+                globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.J);
+                globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.K);
+                globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.H);
+                globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.M);
+            }
+            catch
             {
                 MessageBox.Show("Unable to register global hotkeys", "Error");
-            }
+            }            
         }
 
         void GlobalHotKeyPressed(object sender, KeyPressedEventArgs e)
