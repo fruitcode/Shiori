@@ -14,11 +14,10 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Label Grid.Row="0" x:Name="InfoLabelArtist" Content="Artist" Padding="0 0 0 0"/>
-            <Label Grid.Row="1" x:Name="InfoLabelAlbum" Content="Album" FontWeight="Bold" Padding="0 0 0 0"/>
-            <Label Grid.Row="2" x:Name="InfoLabelTitle" Content="Title" Padding="0 0 0 0"/>
+
+            <Label Grid.Row="0" x:Name="InfoLabelArtistAlbum" Content="Artist - Album" Opacity="0.7" Padding="0 0 0 0"/>
+            <Label Grid.Row="1" x:Name="InfoLabelTitle" Content="Title" FontWeight="Bold" Padding="0 0 0 0"/>
         </Grid>
         
         
@@ -31,6 +30,15 @@
             <Shiori:TimeLine x:Name="myTimeLine" Grid.Row="1"/>
         </Grid>
         
-        <ListBox Grid.Row="2"/>
+        <ListBox x:Name="PlaylistListBox" Grid.Row="2">
+            <ListBox.ItemTemplate>
+                <ItemContainerTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{Binding Path=ArtistAlbum}" Opacity="0.7"/>
+                        <TextBlock Text="{Binding Path=Title}" FontWeight="Bold" Padding="0 0 0 0"/>
+                    </StackPanel>
+                </ItemContainerTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </Window>

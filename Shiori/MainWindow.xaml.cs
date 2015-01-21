@@ -18,6 +18,7 @@ using System.Windows.Threading; // dispather
 using System.IO; // FileInfo
 using libZPlay;
 using Shiori.Lib;
+using Shiori.Playlist;
 
 namespace Shiori
 {
@@ -49,24 +50,31 @@ namespace Shiori
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            currentFileName = "F:\\fry.mp3";
-            bookmarksDashes = new List<Border>();
+            PlaylistManager pm = new PlaylistManager();
+            pm.AddFile("F:\\tr\\fry\\fry1\\fry_1_01.mp3");
+            pm.AddFile("F:\\tr\\fry\\fry1\\fry_1_02.mp3");
+            pm.AddFile("F:\\tr\\fry\\fry1\\fry_1_03.mp3");
 
-            player = new ZPlay();
-            player.OpenFile(currentFileName, TStreamFormat.sfAutodetect);
+            PlaylistListBox.ItemsSource = pm.PLElements;
 
-            TStreamInfo i = new TStreamInfo();
-            player.GetStreamInfo(ref i);
-            metadata = new AudioMetadata(i.Length.sec);
+            //currentFileName = "F:\\fry.mp3";
+            //bookmarksDashes = new List<Border>();
 
-            AddBookmark(0);
+            //player = new ZPlay();
+            //player.OpenFile(currentFileName, TStreamFormat.sfAutodetect);
 
-            ReadID3Info();
+            //TStreamInfo i = new TStreamInfo();
+            //player.GetStreamInfo(ref i);
+            //metadata = new AudioMetadata(i.Length.sec);
 
-            if (!player.StartPlayback())
-                Console.WriteLine("Unable to start playback: " + player.GetError());
+            //AddBookmark(0);
 
-            timer = new Timer(MyTimerCallback, null, 0, 500);
+            //ReadID3Info();
+
+            //if (!player.StartPlayback())
+            //    Console.WriteLine("Unable to start playback: " + player.GetError());
+
+            //timer = new Timer(MyTimerCallback, null, 0, 500);
 
             myTimeLine.PositionChanged += myTimeLine_PositionChanged;
 
@@ -162,14 +170,12 @@ namespace Shiori
 
             if (b1 || b2 || b3)
             {
-                InfoLabelArtist.Content = i3.Artist;
-                InfoLabelAlbum.Content = i3.Album;
+                InfoLabelArtistAlbum.Content = i3.Artist + " - " + i3.Album;
                 InfoLabelTitle.Content = i3.Title;
             }
             else
             {
-                InfoLabelArtist.Content = "-";
-                InfoLabelAlbum.Content = (new FileInfo(currentFileName)).Name;
+                InfoLabelArtistAlbum.Content = (new FileInfo(currentFileName)).Name;
                 InfoLabelTitle.Content = "-";
             }
         }
