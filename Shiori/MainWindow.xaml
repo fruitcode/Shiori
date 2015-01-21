@@ -30,7 +30,7 @@
             <Shiori:TimeLine x:Name="myTimeLine" Grid.Row="1"/>
         </Grid>
         
-        <ListBox x:Name="PlaylistListBox" Grid.Row="2">
+        <ListBox x:Name="PlaylistListBox" Grid.Row="2" MouseDoubleClick="PlaylistListBox_MouseDoubleClick">
             <ListBox.ItemTemplate>
                 <ItemContainerTemplate>
                     <StackPanel Orientation="Vertical">

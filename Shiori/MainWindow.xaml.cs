@@ -57,25 +57,6 @@ namespace Shiori
 
             PlaylistListBox.ItemsSource = pm.PLElements;
 
-            //currentFileName = "F:\\fry.mp3";
-            //bookmarksDashes = new List<Border>();
-
-            //player = new ZPlay();
-            //player.OpenFile(currentFileName, TStreamFormat.sfAutodetect);
-
-            //TStreamInfo i = new TStreamInfo();
-            //player.GetStreamInfo(ref i);
-            //metadata = new AudioMetadata(i.Length.sec);
-
-            //AddBookmark(0);
-
-            //ReadID3Info();
-
-            //if (!player.StartPlayback())
-            //    Console.WriteLine("Unable to start playback: " + player.GetError());
-
-            //timer = new Timer(MyTimerCallback, null, 0, 500);
-
             myTimeLine.PositionChanged += myTimeLine_PositionChanged;
 
             globalHotkeys = new KeyboardHook();
@@ -154,32 +135,6 @@ namespace Shiori
             ));
         }
 
-        private void ReadID3Info()
-        {
-            TID3Info i3 = new TID3Info();
-            player.LoadID3(TID3Version.id3Version2, ref i3);
-            
-
-            Boolean b1 = false, b2 = false, b3 = false;
-            if (i3.Artist != null && i3.Artist != "")
-                b1 = true;
-            if (i3.Album != null && i3.Album != "")
-                b2 = true;
-            if (i3.Title != null && i3.Title != "")
-                b3 = true;
-
-            if (b1 || b2 || b3)
-            {
-                InfoLabelArtistAlbum.Content = i3.Artist + " - " + i3.Album;
-                InfoLabelTitle.Content = i3.Title;
-            }
-            else
-            {
-                InfoLabelArtistAlbum.Content = (new FileInfo(currentFileName)).Name;
-                InfoLabelTitle.Content = "-";
-            }
-        }
-
         private void AddBookmark(int t)
         {
             metadata.Bookmarks.Add(t);
@@ -216,6 +171,43 @@ namespace Shiori
                 t.Left = myTimeLine.ActualWidth * p - 1;
                 b.Margin = t;
             }
+        }
+
+        private void PlaylistListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var s = sender as ListBox;
+            if (s.SelectedItem == null)
+                return;
+
+            var element = s.SelectedItem as PlaylistElement;
+
+            bookmarksDashes = new List<Border>();
+
+            if (player != null)
+            {
+                player.StopPlayback();
+                player.Close();
+            }
+            else
+            {
+                player = new ZPlay();
+            }
+
+            player.OpenFile(element.FilePath, TStreamFormat.sfAutodetect);
+
+            TStreamInfo i = new TStreamInfo();
+            player.GetStreamInfo(ref i);
+            metadata = new AudioMetadata(i.Length.sec);
+
+            AddBookmark(0);
+
+            InfoLabelArtistAlbum.Content = element.ArtistAlbum;
+            InfoLabelTitle.Content = element.Title;
+
+            if (!player.StartPlayback())
+                Console.WriteLine("Unable to start playback: " + player.GetError());
+
+            timer = new Timer(MyTimerCallback, null, 0, 500);
         }
     }
 
