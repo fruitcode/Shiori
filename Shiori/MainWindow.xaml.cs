@@ -196,20 +196,27 @@ namespace Shiori
             InfoLabelTitle.Content = element.Title;
 
             // clear old bookmarks and place bookmarks for new file
-            foreach (var b in bookmarksDashes)
-            {
-                TimeLineGrid.Children.Remove(b);
-            }
+            foreach (var b in bookmarksDashes) { TimeLineGrid.Children.Remove(b); }
             bookmarksDashes.Clear();
-            foreach (int t in playlistManager.CurrentElement.Bookmarks)
-            {
-                AddBookmark(t);
-            }
+            foreach (int t in playlistManager.CurrentElement.Bookmarks) { AddBookmark(t); }
 
             if (!player.StartPlayback())
                 Console.WriteLine("Unable to start playback: " + player.GetError());
 
             updateTimeLineTimer = new Timer(UpdateTimeLineValue, null, 0, 500);
+        }
+
+        private void PlaylistListBox_Drop(object sender, DragEventArgs e)
+        {
+            //int t = int.Parse(((ListBox)sender).Tag.ToString());
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                foreach (var f in files)
+                {
+                    playlistManager.AddFile(f);
+                }
+            }
         }
     }
 }
