@@ -29,13 +29,11 @@ namespace Shiori
     {
         private Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
 
-        ZPlay player;
-        //uint currentDuration;
-        String currentFileName;
-        Timer timer;
-
         PlaylistManager playlistManager;
-        List<Border> bookmarksDashes;
+        ZPlay player;
+        Timer updateTimeLineTimer;
+
+        List<Border> bookmarksDashes = new List<Border>();
 
         KeyboardHook globalHotkeys;
 
@@ -92,6 +90,7 @@ namespace Shiori
                 case Key.M:
                     t = new TStreamTime();
                     player.GetPosition(ref t);
+                    playlistManager.CurrentElement.Bookmarks.Add((int)t.sec);
                     AddBookmark((int)t.sec);
                     break;
                 case Key.H:
@@ -122,7 +121,7 @@ namespace Shiori
             player.Seek(TTimeFormat.tfSecond, ref newPos, TSeekMethod.smFromBeginning);
         }
 
-        private void MyTimerCallback(object state)
+        private void UpdateTimeLineValue(object state)
         {
             TStreamTime t = new TStreamTime();
             player.GetPosition(ref t);
@@ -135,10 +134,9 @@ namespace Shiori
             ));
         }
 
-        private void AddBookmark(int t)
+        private void AddBookmark(int time)
         {
-            playlistManager.CurrentElement.Bookmarks.Add(t);
-            double p = t / (double)playlistManager.CurrentElement.Duration;
+            double p = time / (double)playlistManager.CurrentElement.Duration;
 
             Border border = new Border()
             {
@@ -181,8 +179,6 @@ namespace Shiori
 
             var element = s.SelectedItem as PlaylistElement;
 
-            bookmarksDashes = new List<Border>();
-
             if (player != null)
             {
                 player.StopPlayback();
@@ -196,15 +192,24 @@ namespace Shiori
             playlistManager.NowPlayingIndex = playlistManager.PlaylistElementsArray.IndexOf(element);
             player.OpenFile(element.FilePath, TStreamFormat.sfAutodetect);
 
-            AddBookmark(0);
-
             InfoLabelArtistAlbum.Content = element.ArtistAlbum;
             InfoLabelTitle.Content = element.Title;
+
+            // clear old bookmarks and place bookmarks for new file
+            foreach (var b in bookmarksDashes)
+            {
+                TimeLineGrid.Children.Remove(b);
+            }
+            bookmarksDashes.Clear();
+            foreach (int t in playlistManager.CurrentElement.Bookmarks)
+            {
+                AddBookmark(t);
+            }
 
             if (!player.StartPlayback())
                 Console.WriteLine("Unable to start playback: " + player.GetError());
 
-            timer = new Timer(MyTimerCallback, null, 0, 500);
+            updateTimeLineTimer = new Timer(UpdateTimeLineValue, null, 0, 500);
         }
     }
 }

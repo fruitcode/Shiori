@@ -18,6 +18,7 @@ namespace Shiori.Playlist
         public void AddFile(String filePath)
         {
             PlaylistElement emt = new PlaylistElement();
+            emt.Bookmarks.Add(0);
             emt.FilePath = filePath;
 
             player.OpenFile(filePath, TStreamFormat.sfAutodetect);
