@@ -34,7 +34,7 @@ namespace Shiori
         String currentFileName;
         Timer timer;
 
-        AudioMetadata metadata;
+        PlaylistManager playlistManager;
         List<Border> bookmarksDashes;
 
         KeyboardHook globalHotkeys;
@@ -50,12 +50,12 @@ namespace Shiori
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            PlaylistManager pm = new PlaylistManager();
-            pm.AddFile("F:\\tr\\fry\\fry1\\fry_1_01.mp3");
-            pm.AddFile("F:\\tr\\fry\\fry1\\fry_1_02.mp3");
-            pm.AddFile("F:\\tr\\fry\\fry1\\fry_1_03.mp3");
+            playlistManager = new PlaylistManager();
+            playlistManager.AddFile("F:\\tr\\fry\\fry1\\fry_1_01.mp3");
+            playlistManager.AddFile("F:\\tr\\fry\\fry1\\fry_1_02.mp3");
+            playlistManager.AddFile("F:\\tr\\fry\\fry1\\fry_1_03.mp3");
 
-            PlaylistListBox.ItemsSource = pm.PLElements;
+            PlaylistListBox.ItemsSource = playlistManager.PlaylistElementsArray;
 
             myTimeLine.PositionChanged += myTimeLine_PositionChanged;
 
@@ -97,13 +97,13 @@ namespace Shiori
                 case Key.H:
                     t = new TStreamTime();
                     player.GetPosition(ref t);
-                    t = metadata.GetPreviousBookmark(t);
+                    t = playlistManager.CurrentElement.GetPreviousBookmark(t);
                     player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromBeginning);
                     break;
                 case Key.L:
                     t = new TStreamTime();
                     player.GetPosition(ref t);
-                    t = metadata.GetNextBookmark(t);
+                    t = playlistManager.CurrentElement.GetNextBookmark(t);
                     player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromBeginning);
                     break;
                 default:
@@ -118,7 +118,7 @@ namespace Shiori
 
         void myTimeLine_PositionChanged(object sender, PositionChangedEventArgs e)
         {
-            TStreamTime newPos = new TStreamTime() { sec = (uint)(metadata.Duration * e.NewValue) };
+            TStreamTime newPos = new TStreamTime() { sec = (uint)(playlistManager.CurrentElement.Duration * e.NewValue) };
             player.Seek(TTimeFormat.tfSecond, ref newPos, TSeekMethod.smFromBeginning);
         }
 
@@ -130,15 +130,15 @@ namespace Shiori
             _dispatcher.BeginInvoke(
                 DispatcherPriority.Normal, new Action(() =>
                 {
-                    myTimeLine.Value = t.sec / (double)metadata.Duration;
+                    myTimeLine.Value = t.sec / (double)playlistManager.CurrentElement.Duration;
                 }
             ));
         }
 
         private void AddBookmark(int t)
         {
-            metadata.Bookmarks.Add(t);
-            double p = t / (double)metadata.Duration;
+            playlistManager.CurrentElement.Bookmarks.Add(t);
+            double p = t / (double)playlistManager.CurrentElement.Duration;
 
             Border border = new Border()
             {
@@ -193,11 +193,8 @@ namespace Shiori
                 player = new ZPlay();
             }
 
+            playlistManager.NowPlayingIndex = playlistManager.PlaylistElementsArray.IndexOf(element);
             player.OpenFile(element.FilePath, TStreamFormat.sfAutodetect);
-
-            TStreamInfo i = new TStreamInfo();
-            player.GetStreamInfo(ref i);
-            metadata = new AudioMetadata(i.Length.sec);
 
             AddBookmark(0);
 
@@ -208,48 +205,6 @@ namespace Shiori
                 Console.WriteLine("Unable to start playback: " + player.GetError());
 
             timer = new Timer(MyTimerCallback, null, 0, 500);
-        }
-    }
-
-    public class AudioMetadata
-    {
-        public List<int> Bookmarks = new List<int>();
-        public uint Duration = 0;
-
-        public AudioMetadata()
-        {
-
-        }
-
-        public AudioMetadata(uint duration)
-        {
-            Duration = duration;
-        }
-
-        public TStreamTime GetPreviousBookmark(TStreamTime t)
-        {
-            uint max = 0;
-            uint current = t.sec - 1; // minus one second, to leave a time to skip to previous bookmark when double-clicking 'back' button
-
-            foreach (var i in Bookmarks)
-            {
-                if (i > max && i < current)
-                    max = (uint)i;
-            }
-            return new TStreamTime() { sec = max };
-        }
-
-        public TStreamTime GetNextBookmark(TStreamTime t)
-        {
-            uint min = Duration;
-            uint current = t.sec;
-
-            foreach (var i in Bookmarks)
-            {
-                if (i < min && i > current)
-                    min = (uint)i;
-            }
-            return new TStreamTime() { sec = min };
         }
     }
 }

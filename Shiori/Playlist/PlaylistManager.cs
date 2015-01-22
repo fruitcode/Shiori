@@ -10,35 +10,42 @@ namespace Shiori.Playlist
 {
     class PlaylistManager
     {
-        public List<PlaylistElement> PLElements = new List<PlaylistElement>();
+        public List<PlaylistElement> PlaylistElementsArray = new List<PlaylistElement>();
         private ZPlay player = new ZPlay();
+        public int NowPlayingIndex { get; set; }
+        public PlaylistElement CurrentElement { get { return PlaylistElementsArray[NowPlayingIndex]; } }
 
         public void AddFile(String filePath)
         {
-            PlaylistElement e = new PlaylistElement();
-            e.FilePath = filePath;
+            PlaylistElement emt = new PlaylistElement();
+            emt.FilePath = filePath;
 
             player.OpenFile(filePath, TStreamFormat.sfAutodetect);
 
-            TID3Info i3 = new TID3Info();
-            player.LoadID3(TID3Version.id3Version2, ref i3);
+            TID3Info id3Info = new TID3Info();
+            player.LoadID3(TID3Version.id3Version2, ref id3Info);
 
-            if (i3.Artist != null && i3.Artist != "")
-                e.Artist = i3.Artist;
-            if (i3.Album != null && i3.Album != "")
-                e.Album = i3.Album;
-            if (i3.Title != null && i3.Title != "")
-                e.Title = i3.Title;
+            if (id3Info.Artist != null && id3Info.Artist != "")
+                emt.Artist = id3Info.Artist;
+            if (id3Info.Album != null && id3Info.Album != "")
+                emt.Album = id3Info.Album;
+            if (id3Info.Title != null && id3Info.Title != "")
+                emt.Title = id3Info.Title;
 
-            if (e.Artist == null && e.Album == null && e.Title == null)
+            if (emt.Artist == null && emt.Album == null && emt.Title == null)
             {
-                e.Artist = "?";
-                e.Album = "?";
-                e.Title = filePath;
+                emt.Artist = "?";
+                emt.Album = "?";
+                emt.Title = filePath;
             }
 
-            PLElements.Add(e);
+            TStreamInfo streamInfo = new TStreamInfo();
+            player.GetStreamInfo(ref streamInfo);
+            emt.Duration = streamInfo.Length.sec;
+
+            PlaylistElementsArray.Add(emt);
             player.Close();
         }
+
     }
 }
