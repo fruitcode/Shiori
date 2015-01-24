@@ -67,35 +67,46 @@ namespace Shiori.Playlist
 
             var saveFileDialog = new Microsoft.Win32.SaveFileDialog();
             saveFileDialog.Filter = "Shiori playlist (*.shiori)|*.shiori";
-            saveFileDialog.InitialDirectory = mutualPath.ToString();
+            if (mutualPath != null)
+                saveFileDialog.InitialDirectory = mutualPath.ToString();
             if (saveFileDialog.ShowDialog() == true)
             {
                 MessageBox.Show(saveFileDialog.FileName);
             }
         }
 
-        private DirectoryInfo UpdateMutualPath(String filePath)
+        private Boolean IsDirectory(String path)
         {
-            DirectoryInfo fileDir = (new FileInfo(filePath)).Directory;
+            return (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
+        }
 
-            if (mutualPath == null)
-                return mutualPath = fileDir;
+        private DirectoryInfo DirectoryFromPath(String path)
+        {
+            if (IsDirectory(path))
+                return new DirectoryInfo(path);
+            else
+                return new FileInfo(path).Directory;
+        }
 
-            String _fileDir = fileDir.ToString();
-            string _mutualPath = mutualPath.ToString();
-            String newMutualPath = "";
+        private DirectoryInfo GetMutualPath(String path1, String path2)
+        {
+            String _path1 = DirectoryFromPath(path1).ToString();
+            String _path2 = DirectoryFromPath(path2).ToString();
+
+            String _mutualPath = "";
             String pathPart = "";
-            int minLength = Math.Min(_fileDir.Length, _mutualPath.Length);
+            int minLength = Math.Min(_path1.Length, _path2.Length);
             char c;
+
             for (int i = 0; i < minLength; i++)
             {
-                c = _mutualPath[i];
-                if (c == _fileDir[i])
+                c = _path2[i];
+                if (c == _path1[i])
                 {
                     pathPart += c;
                     if (c == '\\')
                     {
-                        newMutualPath += pathPart;
+                        _mutualPath += pathPart;
                         pathPart = "";
                     }
                 }
@@ -104,14 +115,22 @@ namespace Shiori.Playlist
                     break;
                 }
             }
-            
-            if ( pathPart != "" &&
-                (File.GetAttributes(newMutualPath + pathPart) & FileAttributes.Directory) == FileAttributes.Directory )
-            {
-                newMutualPath += pathPart;
-            }
 
-            return mutualPath = new DirectoryInfo(newMutualPath);
+            if (pathPart != "" && IsDirectory(_mutualPath + pathPart))
+                _mutualPath += pathPart;
+
+            if (_mutualPath != "")
+                return new DirectoryInfo(_mutualPath);
+            else
+                return null;
+        }
+
+        private DirectoryInfo UpdateMutualPath(String filePath)
+        {
+            if (mutualPath == null)
+                return mutualPath = DirectoryFromPath(filePath);
+
+            return mutualPath = GetMutualPath(mutualPath.ToString(), filePath);
         }
     }
 }
