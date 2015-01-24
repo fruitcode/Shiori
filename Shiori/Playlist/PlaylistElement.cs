@@ -10,6 +10,7 @@ namespace Shiori.Playlist
 {
     class PlaylistElement
     {
+        public Boolean IsSaved = false;
         public String FilePath { get; set; }
         public String Artist { get; set; }
         public String Album { get; set; }

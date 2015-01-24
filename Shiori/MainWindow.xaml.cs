@@ -113,6 +113,8 @@ namespace Shiori
         void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             globalHotkeys.Dispose();
+
+            playlistManager.Save();
         }
 
         void myTimeLine_PositionChanged(object sender, PositionChangedEventArgs e)
