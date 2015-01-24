@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows; // messagebox
 using libZPlay;
+using Newtonsoft.Json;
 
 namespace Shiori.Playlist
 {
@@ -29,26 +30,24 @@ namespace Shiori.Playlist
             }
 
             PlaylistElement emt = new PlaylistElement();
-            emt.Bookmarks.Add(0);
+            emt.AddBookmark(0);
             emt.FilePath = filePath;
             UpdateMutualPath(filePath);
 
             TID3Info id3Info = new TID3Info();
             player.LoadID3(TID3Version.id3Version2, ref id3Info);
 
+            List<String> aa = new List<string>();
             if (id3Info.Artist != null && id3Info.Artist != "")
-                emt.Artist = id3Info.Artist;
+                aa.Add(id3Info.Artist);
             if (id3Info.Album != null && id3Info.Album != "")
-                emt.Album = id3Info.Album;
+                aa.Add(id3Info.Album);
+            emt.ArtistAlbum = String.Join(" - ", aa);
+
             if (id3Info.Title != null && id3Info.Title != "")
                 emt.Title = id3Info.Title;
-
-            if (emt.Artist == null && emt.Album == null && emt.Title == null)
-            {
-                emt.Artist = "?";
-                emt.Album = "?";
+            else
                 emt.Title = filePath;
-            }
 
             TStreamInfo streamInfo = new TStreamInfo();
             player.GetStreamInfo(ref streamInfo);
@@ -71,7 +70,7 @@ namespace Shiori.Playlist
                 saveFileDialog.InitialDirectory = mutualPath.ToString();
             if (saveFileDialog.ShowDialog() == true)
             {
-                MessageBox.Show(saveFileDialog.FileName);
+                File.WriteAllText(saveFileDialog.FileName, JsonConvert.SerializeObject(PlaylistElementsArray));
             }
         }
 

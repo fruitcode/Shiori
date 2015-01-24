@@ -10,22 +10,22 @@ namespace Shiori.Playlist
 {
     class PlaylistElement
     {
-        public Boolean IsSaved = false;
+        private Boolean IsSaved = false;
         public String FilePath { get; set; }
-        public String Artist { get; set; }
-        public String Album { get; set; }
+        public String ArtistAlbum { get; set; }
         public String Title { get; set; }
-        public String ArtistAlbum { get { return this.Artist + " - " + this.Album; } }
 
-        public List<int> Bookmarks = new List<int>();
+        private List<int> _bookmarks = new List<int>();
+        public List<int> Bookmarks { get { return _bookmarks; } set { _bookmarks = value; } }
         public uint Duration { get; set; }
 
+        
         public TStreamTime GetPreviousBookmark(TStreamTime t)
         {
             uint max = 0;
             uint current = t.sec - 1; // minus one second, to leave a time to skip to previous bookmark when double-clicking 'back' button
 
-            foreach (var i in Bookmarks)
+            foreach (var i in _bookmarks)
             {
                 if (i > max && i < current)
                     max = (uint)i;
@@ -38,12 +38,17 @@ namespace Shiori.Playlist
             uint min = Duration;
             uint current = t.sec;
 
-            foreach (var i in Bookmarks)
+            foreach (var i in _bookmarks)
             {
                 if (i < min && i > current)
                     min = (uint)i;
             }
             return new TStreamTime() { sec = min };
+        }
+
+        public void AddBookmark(int t)
+        {
+            _bookmarks.Add(t);
         }
     }
 }

@@ -90,7 +90,7 @@ namespace Shiori
                 case Key.M:
                     t = new TStreamTime();
                     player.GetPosition(ref t);
-                    playlistManager.CurrentElement.Bookmarks.Add((int)t.sec);
+                    playlistManager.CurrentElement.AddBookmark((int)t.sec);
                     AddBookmark((int)t.sec);
                     break;
                 case Key.H:
