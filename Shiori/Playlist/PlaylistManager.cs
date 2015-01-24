@@ -18,6 +18,7 @@ namespace Shiori.Playlist
         public ObservableCollection<PlaylistElement> PlaylistElementsArray;
         private ZPlay player = new ZPlay();
         private DirectoryInfo mutualPath;
+        private String _playlistPath;
         public int NowPlayingIndex { get; set; }
         public PlaylistElement CurrentElement { get { return PlaylistElementsArray[NowPlayingIndex]; } }
 
@@ -27,6 +28,7 @@ namespace Shiori.Playlist
         }
         public PlaylistManager(String playlistPath)
         {
+            _playlistPath = playlistPath;
             PlaylistElementsArray = JsonConvert.DeserializeObject<ObservableCollection<PlaylistElement>>(File.ReadAllText(playlistPath));
         }
 
@@ -84,8 +86,12 @@ namespace Shiori.Playlist
 
             var saveFileDialog = new Microsoft.Win32.SaveFileDialog();
             saveFileDialog.Filter = "Shiori playlist (*.shiori)|*.shiori";
-            if (mutualPath != null)
+
+            if (_playlistPath != null)
+                saveFileDialog.InitialDirectory = _playlistPath;
+            else if (mutualPath != null)
                 saveFileDialog.InitialDirectory = mutualPath.ToString();
+
             if (saveFileDialog.ShowDialog() == true)
             {
                 File.WriteAllText(saveFileDialog.FileName, JsonConvert.SerializeObject(PlaylistElementsArray));

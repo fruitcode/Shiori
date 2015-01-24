@@ -48,12 +48,7 @@ namespace Shiori
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //playlistManager = new PlaylistManager();
-            //playlistManager.AddFile("F:\\tr\\fry\\fry1\\fry_1_01.mp3");
-            //playlistManager.AddFile("F:\\tr\\fry\\fry1\\fry_1_02.mp3");
-            //playlistManager.AddFile("F:\\tr\\fry\\fry1\\fry_1_03.mp3");
-            playlistManager = new PlaylistManager("F:\\tr\\fry\\test.shiori");
-
+            playlistManager = new PlaylistManager();
             PlaylistListBox.ItemsSource = playlistManager.PlaylistElementsArray;
 
             myTimeLine.PositionChanged += myTimeLine_PositionChanged;
@@ -214,10 +209,19 @@ namespace Shiori
             //int t = int.Parse(((ListBox)sender).Tag.ToString());
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                string[] _files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                List<String> files = _files.OrderBy(d => d).ToList();
                 foreach (var f in files)
                 {
-                    playlistManager.AddFile(f);
+                    if (f.IndexOf(".shiori") == f.Length - 7 && f.Length > 7)
+                    {
+                        playlistManager.Save();
+                        playlistManager = new PlaylistManager(f);
+                        PlaylistListBox.ItemsSource = playlistManager.PlaylistElementsArray;
+                        break;
+                    }
+                    else
+                        playlistManager.AddFile(f);
                 }
             }
         }
