@@ -14,12 +14,21 @@ namespace Shiori.Playlist
 {
     class PlaylistManager
     {
-        private Boolean IsSaved = false;
-        public ObservableCollection<PlaylistElement> PlaylistElementsArray = new ObservableCollection<PlaylistElement>();
+        private Boolean IsSaved = true;
+        public ObservableCollection<PlaylistElement> PlaylistElementsArray;
         private ZPlay player = new ZPlay();
         private DirectoryInfo mutualPath;
         public int NowPlayingIndex { get; set; }
         public PlaylistElement CurrentElement { get { return PlaylistElementsArray[NowPlayingIndex]; } }
+
+        public PlaylistManager()
+        {
+            PlaylistElementsArray = new ObservableCollection<PlaylistElement>();
+        }
+        public PlaylistManager(String playlistPath)
+        {
+            PlaylistElementsArray = JsonConvert.DeserializeObject<ObservableCollection<PlaylistElement>>(File.ReadAllText(playlistPath));
+        }
 
         public void AddFile(String filePath)
         {
@@ -30,7 +39,7 @@ namespace Shiori.Playlist
             }
 
             PlaylistElement emt = new PlaylistElement();
-            emt.AddBookmark(0);
+            emt.AddBookmark(0); // also, set IsSaved to false here
             emt.FilePath = filePath;
             UpdateMutualPath(filePath);
 
@@ -53,13 +62,22 @@ namespace Shiori.Playlist
             player.GetStreamInfo(ref streamInfo);
             emt.Duration = streamInfo.Length.sec;
 
-            PlaylistElementsArray.Add(emt);
             player.Close();
+
+            PlaylistElementsArray.Add(emt);
+            IsSaved = false;
         }
 
         public void Save()
         {
-            if (IsSaved) return;
+            Boolean shouldSave = false;
+            foreach (var item in PlaylistElementsArray)
+                if (!item.IsSaved())
+                {
+                    shouldSave = true;
+                    break;
+                }
+            if (!shouldSave && IsSaved) return;
 
             MessageBoxResult result = MessageBox.Show("Do you want to save changes of playlist?", "Shiori", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.No) return;

@@ -48,10 +48,11 @@ namespace Shiori
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            playlistManager = new PlaylistManager();
-            playlistManager.AddFile("F:\\tr\\fry\\fry1\\fry_1_01.mp3");
-            playlistManager.AddFile("F:\\tr\\fry\\fry1\\fry_1_02.mp3");
-            playlistManager.AddFile("F:\\tr\\fry\\fry1\\fry_1_03.mp3");
+            //playlistManager = new PlaylistManager();
+            //playlistManager.AddFile("F:\\tr\\fry\\fry1\\fry_1_01.mp3");
+            //playlistManager.AddFile("F:\\tr\\fry\\fry1\\fry_1_02.mp3");
+            //playlistManager.AddFile("F:\\tr\\fry\\fry1\\fry_1_03.mp3");
+            playlistManager = new PlaylistManager("F:\\tr\\fry\\test.shiori");
 
             PlaylistListBox.ItemsSource = playlistManager.PlaylistElementsArray;
 

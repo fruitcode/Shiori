@@ -10,7 +10,7 @@ namespace Shiori.Playlist
 {
     class PlaylistElement
     {
-        private Boolean IsSaved = false;
+        private Boolean _isSaved = true;
         public String FilePath { get; set; }
         public String ArtistAlbum { get; set; }
         public String Title { get; set; }
@@ -49,6 +49,17 @@ namespace Shiori.Playlist
         public void AddBookmark(int t)
         {
             _bookmarks.Add(t);
+            _isSaved = false;
+        }
+
+        public void Touch()
+        {
+            _isSaved = false;
+        }
+
+        public Boolean IsSaved()
+        {
+            return _isSaved;
         }
     }
 }
