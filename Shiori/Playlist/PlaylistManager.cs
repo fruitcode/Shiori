@@ -155,5 +155,33 @@ namespace Shiori.Playlist
 
             return mutualPath = GetMutualPath(mutualPath.ToString(), filePath);
         }
+
+        public void MoveFilesUp(int min, int max)
+        {
+            if (min > 0)
+            {
+                var f = PlaylistElementsArray[min - 1];
+                PlaylistElementsArray.Remove(f);
+                PlaylistElementsArray.Insert(max, f);
+            } // else: already in the top
+            IsSaved = false;
+        }
+
+        public void MoveFilesDown(int min, int max)
+        {
+            if (max < PlaylistElementsArray.Count - 1)
+            {
+                var f = PlaylistElementsArray[max + 1];
+                PlaylistElementsArray.Remove(f);
+                PlaylistElementsArray.Insert(min, f);
+            } // else: already in the bottom
+            IsSaved = false;
+        }
+
+        public void DeleteElement(PlaylistElement e)
+        {
+            PlaylistElementsArray.Remove(e);
+            IsSaved = false;
+        }
     }
 }

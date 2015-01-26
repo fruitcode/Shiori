@@ -31,7 +31,7 @@
         </Grid>
 
         <ListBox x:Name="PlaylistListBox" Grid.Row="2" MouseDoubleClick="PlaylistListBox_MouseDoubleClick"
-                 AllowDrop="True" Drop="PlaylistListBox_Drop" >
+                 AllowDrop="True" Drop="PlaylistListBox_Drop" SelectionMode="Extended" >
             <ListBox.ItemTemplate>
                 <ItemContainerTemplate>
                     <StackPanel Orientation="Vertical">

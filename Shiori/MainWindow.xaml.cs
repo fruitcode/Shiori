@@ -53,6 +53,14 @@ namespace Shiori
 
             myTimeLine.PositionChanged += myTimeLine_PositionChanged;
 
+
+            KeyBinding kbUp = new KeyBinding(new SimpleCommand(MoveFilesUp, null), Key.Up, ModifierKeys.Control);
+            KeyBinding kbDown = new KeyBinding(new SimpleCommand(MoveFilesDown, null), Key.Down, ModifierKeys.Control);
+            KeyBinding kbDelete = new KeyBinding(new SimpleCommand(DeleteFiles, null), Key.Delete, ModifierKeys.None);
+            PlaylistListBox.InputBindings.Add(kbUp);
+            PlaylistListBox.InputBindings.Add(kbDown);
+            PlaylistListBox.InputBindings.Add(kbDelete);
+
             globalHotkeys = new KeyboardHook();
             globalHotkeys.KeyPressed += GlobalHotKeyPressed;
 
@@ -224,6 +232,46 @@ namespace Shiori
                         playlistManager.AddFile(f);
                 }
             }
+        }
+
+        private void MoveFilesUp(Object _o)
+        {
+            int min = 0, max = 0;
+            SelectionRange(ref min, ref max);
+            playlistManager.MoveFilesUp(min, max);
+        }
+
+        private void MoveFilesDown(Object _o)
+        {
+            int min = 0, max = 0;
+            SelectionRange(ref min, ref max);
+            playlistManager.MoveFilesDown(min, max);
+        }
+
+        private void SelectionRange(ref int min, ref int max)
+        {
+            min = PlaylistListBox.Items.Count;
+            max = -1;
+
+            int i;
+            foreach (PlaylistElement f in PlaylistListBox.SelectedItems)
+            {
+                i = playlistManager.PlaylistElementsArray.IndexOf(f);
+                if (i < min)
+                    min = i;
+                if (i > max)
+                    max = i;
+            }
+        }
+
+        private void DeleteFiles(Object _o)
+        {
+            List<PlaylistElement> selected = new List<PlaylistElement>();
+
+            foreach (PlaylistElement f in PlaylistListBox.SelectedItems)
+                selected.Add(f);
+            foreach (PlaylistElement f in selected)
+                playlistManager.DeleteElement(f);
         }
     }
 }

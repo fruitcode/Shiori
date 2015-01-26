@@ -62,6 +62,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Lib\KeyboardHook.cs" />
+    <Compile Include="Lib\SimpleCommand.cs" />
     <Compile Include="Playlist\PlaylistElement.cs" />
     <Compile Include="Playlist\PlaylistManager.cs" />
     <Compile Include="TimeLine.cs" />
