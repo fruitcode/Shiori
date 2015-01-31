@@ -180,11 +180,12 @@ namespace Shiori
 
         private void PlaylistListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var s = sender as ListBox;
-            if (s.SelectedItem == null)
+            if (e.ClickCount != 2)
                 return;
 
-            var element = s.SelectedItem as PlaylistElement;
+            PlaylistElement element;
+            if ((element = PlaylistListBox.SelectedItem as PlaylistElement) == null)
+                return;
 
             if (player != null)
             {

@@ -5,8 +5,12 @@
         Title="Shiori" Height="450" Width="350"
         Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
     <Window.Resources>
+        <Style x:Key="itemStyle" TargetType="{x:Type ListViewItem}">
+            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="PlaylistListBox_MouseDoubleClick"/>
+        </Style>
+        
         <DataTemplate x:Key="CellTemplate_IsCompleted">
-            <CheckBox IsChecked="{Binding Path=IsCompleted}"/>
+            <CheckBox IsChecked="{Binding Path=IsCompleted}" IsEnabled="False"/>
         </DataTemplate>
         
         <DataTemplate x:Key="CellTemplate_Title">
@@ -54,8 +58,9 @@
             <Shiori:TimeLine x:Name="myTimeLine" Grid.Row="1"/>
         </Grid>
 
-        <ListView x:Name="PlaylistListBox" Grid.Row="2" MouseDoubleClick="PlaylistListBox_MouseDoubleClick"
-                 AllowDrop="True" Drop="PlaylistListBox_Drop" SelectionMode="Extended" >
+        <ListView x:Name="PlaylistListBox" Grid.Row="2"
+                 AllowDrop="True" Drop="PlaylistListBox_Drop" SelectionMode="Extended"
+                 ItemContainerStyle="{StaticResource itemStyle}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="" Width="30" CellTemplate="{StaticResource CellTemplate_IsCompleted}"/>
