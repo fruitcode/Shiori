@@ -6,17 +6,26 @@
         Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
     <Window.Resources>
         <DataTemplate x:Key="CellTemplate_IsCompleted">
-            <DockPanel>
-                <CheckBox IsChecked="{Binding Path=IsCompleted}"/>
-            </DockPanel>
+            <CheckBox IsChecked="{Binding Path=IsCompleted}"/>
         </DataTemplate>
         
         <DataTemplate x:Key="CellTemplate_Title">
-            <DockPanel>
-                <TextBlock DockPanel.Dock="Top" Text="{Binding Path=ArtistAlbum}" Opacity="0.7"/>
-                <TextBlock DockPanel.Dock="Bottom" Text="{Binding Path=Title}" FontWeight="Bold" Padding="0 0 0 0"/>
-            </DockPanel>
+            <TextBlock DockPanel.Dock="Bottom" Text="{Binding Path=Title}" Padding="0 0 0 0"/>
         </DataTemplate>
+
+        <ControlTemplate x:Key="GroupItem_Template">
+            <DockPanel>
+                <Grid DockPanel.Dock="Top"  Margin="8 4 8 4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" FontWeight="Bold" Text="{Binding Name}" Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" Margin="0 0 8 0"/>
+                    <Border Grid.Column="1" BorderBrush="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" Height="1" BorderThickness="0 1 0 0" SnapsToDevicePixels="True"/>
+                </Grid>
+                <ItemsPresenter DockPanel.Dock="Bottom"/>
+            </DockPanel>
+        </ControlTemplate>
     </Window.Resources>
     
     <Grid Margin="6 4 6 6">
@@ -53,6 +62,15 @@
                     <GridViewColumn Header="Title" Width="300" CellTemplate="{StaticResource CellTemplate_Title}"/>
                 </GridView>
             </ListView.View>
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Template" Value="{StaticResource GroupItem_Template}"/>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </ListView.GroupStyle>
         </ListView>
     </Grid>
 </Window>

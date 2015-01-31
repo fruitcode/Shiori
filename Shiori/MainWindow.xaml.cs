@@ -49,7 +49,7 @@ namespace Shiori
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             playlistManager = new PlaylistManager();
-            PlaylistListBox.ItemsSource = playlistManager.PlaylistElementsArray;
+            BindPlaylist();
 
             myTimeLine.PositionChanged += myTimeLine_PositionChanged;
 
@@ -60,6 +60,7 @@ namespace Shiori
             PlaylistListBox.InputBindings.Add(kbUp);
             PlaylistListBox.InputBindings.Add(kbDown);
             PlaylistListBox.InputBindings.Add(kbDelete);
+
 
             globalHotkeys = new KeyboardHook();
             globalHotkeys.KeyPressed += GlobalHotKeyPressed;
@@ -225,13 +226,22 @@ namespace Shiori
                     {
                         playlistManager.Save();
                         playlistManager = new PlaylistManager(f);
-                        PlaylistListBox.ItemsSource = playlistManager.PlaylistElementsArray;
+                        BindPlaylist();
                         break;
                     }
                     else
                         playlistManager.AddFile(f);
                 }
             }
+        }
+
+        private void BindPlaylist()
+        {
+            PlaylistListBox.ItemsSource = playlistManager.PlaylistElementsArray;
+
+            System.Windows.Data.CollectionView myView = (System.Windows.Data.CollectionView)System.Windows.Data.CollectionViewSource.GetDefaultView(PlaylistListBox.ItemsSource);
+            myView.GroupDescriptions.Clear();
+            myView.GroupDescriptions.Add(new System.Windows.Data.PropertyGroupDescription("ArtistAlbum"));
         }
 
         private void MoveFilesUp(Object _o)
