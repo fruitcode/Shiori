@@ -74,7 +74,7 @@ namespace Shiori.Playlist
         {
             Boolean shouldSave = false;
             foreach (var item in PlaylistElementsArray)
-                if (!item.IsSaved())
+                if (!item.IsSaved)
                 {
                     shouldSave = true;
                     break;

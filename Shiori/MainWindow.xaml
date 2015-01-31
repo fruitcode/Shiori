@@ -4,6 +4,21 @@
         xmlns:Shiori="clr-namespace:Shiori"
         Title="Shiori" Height="450" Width="350"
         Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+    <Window.Resources>
+        <DataTemplate x:Key="CellTemplate_IsCompleted">
+            <DockPanel>
+                <CheckBox IsChecked="{Binding Path=IsCompleted}"/>
+            </DockPanel>
+        </DataTemplate>
+        
+        <DataTemplate x:Key="CellTemplate_Title">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="{Binding Path=ArtistAlbum}" Opacity="0.7"/>
+                <TextBlock DockPanel.Dock="Bottom" Text="{Binding Path=Title}" FontWeight="Bold" Padding="0 0 0 0"/>
+            </DockPanel>
+        </DataTemplate>
+    </Window.Resources>
+    
     <Grid Margin="6 4 6 6">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -30,16 +45,14 @@
             <Shiori:TimeLine x:Name="myTimeLine" Grid.Row="1"/>
         </Grid>
 
-        <ListBox x:Name="PlaylistListBox" Grid.Row="2" MouseDoubleClick="PlaylistListBox_MouseDoubleClick"
+        <ListView x:Name="PlaylistListBox" Grid.Row="2" MouseDoubleClick="PlaylistListBox_MouseDoubleClick"
                  AllowDrop="True" Drop="PlaylistListBox_Drop" SelectionMode="Extended" >
-            <ListBox.ItemTemplate>
-                <ItemContainerTemplate>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Text="{Binding Path=ArtistAlbum}" Opacity="0.7"/>
-                        <TextBlock Text="{Binding Path=Title}" FontWeight="Bold" Padding="0 0 0 0"/>
-                    </StackPanel>
-                </ItemContainerTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="" Width="30" CellTemplate="{StaticResource CellTemplate_IsCompleted}"/>
+                    <GridViewColumn Header="Title" Width="300" CellTemplate="{StaticResource CellTemplate_Title}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>

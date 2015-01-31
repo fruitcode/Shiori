@@ -5,27 +5,32 @@ using System.Text;
 using System.Threading.Tasks;
 
 using libZPlay;
+using Newtonsoft.Json;
 
 namespace Shiori.Playlist
 {
     class PlaylistElement
     {
-        private Boolean _isSaved = true;
+        [JsonIgnore]
+        public Boolean IsSaved = true;
+
         public String FilePath { get; set; }
         public String ArtistAlbum { get; set; }
         public String Title { get; set; }
 
-        private List<int> _bookmarks = new List<int>();
-        public List<int> Bookmarks { get { return _bookmarks; } set { _bookmarks = value; } }
+        private List<int> pBookmarks = new List<int>();
+        public List<int> Bookmarks { get { return pBookmarks; } set { pBookmarks = value; } }
         public uint Duration { get; set; }
 
+        private Boolean pIsCompleted = false;
+        public Boolean IsCompleted { get { return pIsCompleted; } set { pIsCompleted = value; } }
         
         public TStreamTime GetPreviousBookmark(TStreamTime t)
         {
             uint max = 0;
             uint current = t.sec - 1; // minus one second, to leave a time to skip to previous bookmark when double-clicking 'back' button
 
-            foreach (var i in _bookmarks)
+            foreach (var i in pBookmarks)
             {
                 if (i > max && i < current)
                     max = (uint)i;
@@ -38,7 +43,7 @@ namespace Shiori.Playlist
             uint min = Duration;
             uint current = t.sec;
 
-            foreach (var i in _bookmarks)
+            foreach (var i in pBookmarks)
             {
                 if (i < min && i > current)
                     min = (uint)i;
@@ -48,18 +53,8 @@ namespace Shiori.Playlist
 
         public void AddBookmark(int t)
         {
-            _bookmarks.Add(t);
-            _isSaved = false;
-        }
-
-        public void Touch()
-        {
-            _isSaved = false;
-        }
-
-        public Boolean IsSaved()
-        {
-            return _isSaved;
+            pBookmarks.Add(t);
+            IsSaved = false;
         }
     }
 }
