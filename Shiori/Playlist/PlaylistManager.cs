@@ -100,6 +100,9 @@ namespace Shiori.Playlist
 
         private Boolean IsDirectory(String path)
         {
+            if (!File.Exists(path) && !Directory.Exists(path))
+                return false;
+
             return (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
         }
 
