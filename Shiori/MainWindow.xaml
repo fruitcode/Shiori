@@ -12,10 +12,6 @@
         <DataTemplate x:Key="CellTemplate_IsCompleted">
             <CheckBox IsChecked="{Binding Path=IsCompleted}" IsEnabled="False"/>
         </DataTemplate>
-        
-        <DataTemplate x:Key="CellTemplate_Title">
-            <TextBlock DockPanel.Dock="Bottom" Text="{Binding Path=Title}" Padding="0 0 0 0"/>
-        </DataTemplate>
 
         <ControlTemplate x:Key="GroupItem_Template">
             <DockPanel>
@@ -64,7 +60,8 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="" Width="30" CellTemplate="{StaticResource CellTemplate_IsCompleted}"/>
-                    <GridViewColumn Header="Title" Width="300" CellTemplate="{StaticResource CellTemplate_Title}"/>
+                    <GridViewColumn Header="#" Width="30" DisplayMemberBinding="{Binding Path=Tracknumber}"/>
+                    <GridViewColumn Header="Title" Width="300" DisplayMemberBinding="{Binding Path=Title}"/>
                 </GridView>
             </ListView.View>
             <ListView.GroupStyle>

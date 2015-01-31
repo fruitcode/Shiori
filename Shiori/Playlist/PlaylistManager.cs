@@ -60,6 +60,11 @@ namespace Shiori.Playlist
             else
                 emt.Title = filePath;
 
+            if (id3Info.Track != null && id3Info.Track != "")
+                emt.Tracknumber = int.Parse(id3Info.Track);
+            else
+                emt.Tracknumber = 0;
+
             TStreamInfo streamInfo = new TStreamInfo();
             player.GetStreamInfo(ref streamInfo);
             emt.Duration = streamInfo.Length.sec;

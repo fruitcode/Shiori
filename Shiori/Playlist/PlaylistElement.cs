@@ -16,6 +16,7 @@ namespace Shiori.Playlist
         public String FilePath { get; set; }
         public String ArtistAlbum { get; set; }
         public String Title { get; set; }
+        public int Tracknumber { get; set; }
 
         private List<int> pBookmarks = new List<int>();
         public List<int> Bookmarks { get { return pBookmarks; } set { pBookmarks = value; } }
