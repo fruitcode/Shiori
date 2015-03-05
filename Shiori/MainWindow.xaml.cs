@@ -72,6 +72,7 @@ namespace Shiori
                 globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.H);
                 globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.L);
                 globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.M);
+                globalHotkeys.RegisterHotKey(KeyModifier.Alt | KeyModifier.Control, Key.U);
             }
             catch
             {
@@ -81,6 +82,9 @@ namespace Shiori
 
         void GlobalHotKeyPressed(object sender, KeyPressedEventArgs e)
         {
+            if (player == null)
+                return;
+
             TStreamTime t;
             switch (e.Key)
             {
@@ -109,6 +113,14 @@ namespace Shiori
                     player.GetPosition(ref t);
                     t = playlistManager.CurrentElement.GetNextBookmark(t);
                     player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromBeginning);
+                    break;
+                case Key.U:
+                    TStreamStatus s = new TStreamStatus();
+                    player.GetStatus(ref s);
+                    if (s.fPause)
+                        player.ResumePlayback();
+                    else if (s.fPlay)
+                        player.PausePlayback();
                     break;
                 default:
                     break;
