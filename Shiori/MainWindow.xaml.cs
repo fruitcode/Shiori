@@ -136,8 +136,11 @@ namespace Shiori
 
         void myTimeLine_PositionChanged(object sender, PositionChangedEventArgs e)
         {
-            TStreamTime newPos = new TStreamTime() { sec = (uint)(playlistManager.CurrentElement.Duration * e.NewValue) };
-            player.Seek(TTimeFormat.tfSecond, ref newPos, TSeekMethod.smFromBeginning);
+            if (player != null)
+            {
+                TStreamTime newPos = new TStreamTime() { sec = (uint)(playlistManager.CurrentElement.Duration * e.NewValue) };
+                player.Seek(TTimeFormat.tfSecond, ref newPos, TSeekMethod.smFromBeginning);
+            }
         }
 
         private void UpdateTimeLineValue(object state)
