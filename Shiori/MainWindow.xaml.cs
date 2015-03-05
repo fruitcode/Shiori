@@ -19,6 +19,8 @@ using System.IO; // FileInfo
 using libZPlay;
 using Shiori.Lib;
 using Shiori.Playlist;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace Shiori
 {
@@ -32,6 +34,21 @@ namespace Shiori
         PlaylistManager playlistManager;
         ZPlay player;
         Timer updateTimeLineTimer;
+
+        int lastMarginLeft = 0;
+        ObservableCollection<BorderItems> _BordersList;
+
+        public ObservableCollection<BorderItems> BordersList
+        {
+            get { return _BordersList; }
+            set
+            {
+                _BordersList = value;
+                OnPropertyChanged("BordersList");
+            }
+        }
+
+
 
         List<Border> bookmarksDashes = new List<Border>();
 
@@ -48,6 +65,8 @@ namespace Shiori
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            BordersList = new ObservableCollection<BorderItems>();
+            myTimeLine.ItemsSource = BordersList;
             playlistManager = new PlaylistManager();
             BindPlaylist();
 
@@ -171,17 +190,25 @@ namespace Shiori
                 SnapsToDevicePixels = true,
                 Tag = p
             };
-            Grid.SetRow(border, 0);
+
+
+            BordersList.Add(new BorderItems() { MarginLeft = Convert.ToInt32(myTimeLine.ActualWidth * p - 1) - lastMarginLeft, Tag = p.ToString() });
+            lastMarginLeft = Convert.ToInt32(myTimeLine.ActualWidth * p);
+
+            //Grid.SetRow(border, 0);
 
             bookmarksDashes.Add(border);
-            TimeLineGrid.Children.Add(border);
+            //TimeLineGrid.Children.Add(border);
         }
 
         void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (bookmarksDashes == null)
                 return;
+            if (BordersList != null)
+                BordersList.Clear();
 
+            int _tempMarginLeft = 0;
             double p;
             Thickness t;
             foreach (var b in bookmarksDashes)
@@ -190,7 +217,26 @@ namespace Shiori
                 t = b.Margin;
                 t.Left = myTimeLine.ActualWidth * p - 1;
                 b.Margin = t;
+
+                if (BordersList != null)
+                {
+                    BordersList.Add(new BorderItems() { MarginLeft = Convert.ToInt32(myTimeLine.ActualWidth * p - 1) - _tempMarginLeft, Tag = p.ToString() });
+                    _tempMarginLeft = Convert.ToInt32(myTimeLine.ActualWidth * p);
+                }
             }
+            //if (BordersList == null)
+            //    return;
+            //int _tempMarginLeft = 0;
+            //double tempP;
+            //foreach (var item in BordersList)
+            //{
+            //    tempP = Convert.ToDouble(item.Tag);
+            //    item.MarginLeft = Convert.ToInt32(myTimeLine.ActualWidth * tempP - 1) - _tempMarginLeft;
+            //    _tempMarginLeft = Convert.ToInt32(myTimeLine.ActualWidth * tempP);
+            //}
+            //myTimeLine.ItemsSource = null;
+            //myTimeLine.ItemsSource = BordersList;
+
         }
 
         private void PlaylistListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -298,6 +344,17 @@ namespace Shiori
                 selected.Add(f);
             foreach (PlaylistElement f in selected)
                 playlistManager.DeleteElement(f);
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string Value)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(Value));
+            }
         }
     }
 }
