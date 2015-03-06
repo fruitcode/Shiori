@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 
 namespace Shiori.Converters
 {
-    public class IntToMarginConverter : IValueConverter
+   public class LeftPercentageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return value.ToString() + ", 2, 0, 2";
+            return new GridLength(System.Convert.ToDouble(value),GridUnitType.Star);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

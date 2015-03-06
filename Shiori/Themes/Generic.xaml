@@ -4,7 +4,8 @@
     xmlns:converters="clr-namespace:Shiori.Converters"
     xmlns:local="clr-namespace:Shiori">
 
-    <converters:IntToMarginConverter x:Key="IntToMarginConverter"/>
+    <converters:LeftPercentageConverter x:Key="LeftPercentageConverter"/>
+    <converters:RightPercentageConverter x:Key="RightPercentageConverter"/>
 
     <Style TargetType="{x:Type local:TimeLine}">
         <Setter Property="Template">
@@ -15,15 +16,22 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <ItemsControl ItemsSource="{Binding ItemsSource,RelativeSource={RelativeSource TemplatedParent}}" x:Name="test" Grid.Row="0">
+                        <ItemsControl ItemsSource="{Binding BookmarksSource,RelativeSource={RelativeSource TemplatedParent}}" x:Name="test" Grid.Row="0">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Grid.Row="1" Width="2" Height="6" Margin="{Binding MarginLeft,Converter={StaticResource IntToMarginConverter}}" Tag="{Binding Tag}" HorizontalAlignment="Left" BorderThickness="1, 0, 1, 0" Background="Black" BorderBrush="Black" SnapsToDevicePixels="True" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="{Binding Converter={StaticResource LeftPercentageConverter}}"/>
+                                            <ColumnDefinition Width="{Binding Converter={StaticResource RightPercentageConverter}}"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="1" Width="2" Height="6" HorizontalAlignment="Left" BorderThickness="1, 0, 1, 0" BorderBrush="Black" SnapsToDevicePixels="True" />
+                                    </Grid>
+                                    <!--<Border Grid.Row="1" Width="2" Height="6" Margin="{Binding Converter={StaticResource IntToMarginConverter}}" Tag="{Binding Tag}" HorizontalAlignment="Left" BorderThickness="1, 0, 1, 0" Background="Black" BorderBrush="Black" SnapsToDevicePixels="True" />-->
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal"/>
+                                    <Grid />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>

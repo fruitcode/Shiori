@@ -48,9 +48,9 @@ namespace Shiori
         }
 
         public static readonly DependencyProperty ItemsSourceProperty =
-                DependencyProperty.Register("ItemsSource", typeof(object), typeof(TimeLine), new PropertyMetadata(0));
+                DependencyProperty.Register("BookmarksSource", typeof(object), typeof(TimeLine), new PropertyMetadata(0));
 
-        public object ItemsSource
+        public object BookmarksSource
         {
             get { return (object)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }

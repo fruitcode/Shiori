@@ -61,8 +61,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BorderItems.cs" />
-    <Compile Include="Converters\IntToMarginConverter.cs" />
+    <Compile Include="Converters\LeftPercentageConverter.cs" />
+    <Compile Include="Converters\RightPercentageConverter.cs" />
     <Compile Include="Lib\KeyboardHook.cs" />
     <Compile Include="Lib\SimpleCommand.cs" />
     <Compile Include="Playlist\PlaylistElement.cs" />

@@ -35,10 +35,9 @@ namespace Shiori
         ZPlay player;
         Timer updateTimeLineTimer;
 
-        int lastMarginLeft = 0;
-        ObservableCollection<BorderItems> _BordersList;
+        ObservableCollection<double> _BordersList;
 
-        public ObservableCollection<BorderItems> BordersList
+        public ObservableCollection<double> BordersList
         {
             get { return _BordersList; }
             set
@@ -65,8 +64,8 @@ namespace Shiori
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            BordersList = new ObservableCollection<BorderItems>();
-            myTimeLine.ItemsSource = BordersList;
+            BordersList = new ObservableCollection<double>();
+            myTimeLine.BookmarksSource = BordersList;
             playlistManager = new PlaylistManager();
             BindPlaylist();
 
@@ -191,9 +190,7 @@ namespace Shiori
                 Tag = p
             };
 
-
-            BordersList.Add(new BorderItems() { MarginLeft = Convert.ToInt32(myTimeLine.ActualWidth * p - 1) - lastMarginLeft, Tag = p.ToString() });
-            lastMarginLeft = Convert.ToInt32(myTimeLine.ActualWidth * p);
+            BordersList.Add(p*100);
 
             //Grid.SetRow(border, 0);
 
@@ -205,10 +202,7 @@ namespace Shiori
         {
             if (bookmarksDashes == null)
                 return;
-            if (BordersList != null)
-                BordersList.Clear();
 
-            int _tempMarginLeft = 0;
             double p;
             Thickness t;
             foreach (var b in bookmarksDashes)
@@ -217,26 +211,7 @@ namespace Shiori
                 t = b.Margin;
                 t.Left = myTimeLine.ActualWidth * p - 1;
                 b.Margin = t;
-
-                if (BordersList != null)
-                {
-                    BordersList.Add(new BorderItems() { MarginLeft = Convert.ToInt32(myTimeLine.ActualWidth * p - 1) - _tempMarginLeft, Tag = p.ToString() });
-                    _tempMarginLeft = Convert.ToInt32(myTimeLine.ActualWidth * p);
-                }
             }
-            //if (BordersList == null)
-            //    return;
-            //int _tempMarginLeft = 0;
-            //double tempP;
-            //foreach (var item in BordersList)
-            //{
-            //    tempP = Convert.ToDouble(item.Tag);
-            //    item.MarginLeft = Convert.ToInt32(myTimeLine.ActualWidth * tempP - 1) - _tempMarginLeft;
-            //    _tempMarginLeft = Convert.ToInt32(myTimeLine.ActualWidth * tempP);
-            //}
-            //myTimeLine.ItemsSource = null;
-            //myTimeLine.ItemsSource = BordersList;
-
         }
 
         private void PlaylistListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
