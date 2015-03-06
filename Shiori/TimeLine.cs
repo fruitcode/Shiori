@@ -47,6 +47,15 @@ namespace Shiori
             DefaultStyleKeyProperty.OverrideMetadata(typeof(TimeLine), new FrameworkPropertyMetadata(typeof(TimeLine)));
         }
 
+        public static readonly DependencyProperty ItemsSourceProperty =
+                DependencyProperty.Register("BookmarksSource", typeof(object), typeof(TimeLine), new PropertyMetadata(0));
+
+        public object BookmarksSource
+        {
+            get { return (object)GetValue(ItemsSourceProperty); }
+            set { SetValue(ItemsSourceProperty, value); }
+        }
+
         protected override void OnMouseMove(MouseEventArgs e)
         {
             if (seekingMode)

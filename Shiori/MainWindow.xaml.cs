@@ -19,6 +19,8 @@ using System.IO; // FileInfo
 using libZPlay;
 using Shiori.Lib;
 using Shiori.Playlist;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace Shiori
 {
@@ -32,6 +34,20 @@ namespace Shiori
         PlaylistManager playlistManager;
         ZPlay player;
         Timer updateTimeLineTimer;
+
+        ObservableCollection<double> _BordersList;
+
+        public ObservableCollection<double> BordersList
+        {
+            get { return _BordersList; }
+            set
+            {
+                _BordersList = value;
+                OnPropertyChanged("BordersList");
+            }
+        }
+
+
 
         List<Border> bookmarksDashes = new List<Border>();
 
@@ -48,6 +64,8 @@ namespace Shiori
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            BordersList = new ObservableCollection<double>();
+            myTimeLine.BookmarksSource = BordersList;
             playlistManager = new PlaylistManager();
             BindPlaylist();
 
@@ -171,10 +189,13 @@ namespace Shiori
                 SnapsToDevicePixels = true,
                 Tag = p
             };
-            Grid.SetRow(border, 0);
+
+            BordersList.Add(p*100);
+
+            //Grid.SetRow(border, 0);
 
             bookmarksDashes.Add(border);
-            TimeLineGrid.Children.Add(border);
+            //TimeLineGrid.Children.Add(border);
         }
 
         void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -298,6 +319,17 @@ namespace Shiori
                 selected.Add(f);
             foreach (PlaylistElement f in selected)
                 playlistManager.DeleteElement(f);
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string Value)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(Value));
+            }
         }
     }
 }

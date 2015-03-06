@@ -1,14 +1,42 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:Shiori.Converters"
     xmlns:local="clr-namespace:Shiori">
 
+    <converters:LeftPercentageConverter x:Key="LeftPercentageConverter"/>
+    <converters:RightPercentageConverter x:Key="RightPercentageConverter"/>
 
     <Style TargetType="{x:Type local:TimeLine}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:TimeLine}">
-                    <ProgressBar Value="{Binding BarValue, RelativeSource={RelativeSource TemplatedParent}}" Maximum="1" SmallChange="0.01" LargeChange="0.1" MinHeight="14"/>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <ItemsControl ItemsSource="{Binding BookmarksSource,RelativeSource={RelativeSource TemplatedParent}}" x:Name="test" Grid.Row="0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="{Binding Converter={StaticResource LeftPercentageConverter}}"/>
+                                            <ColumnDefinition Width="{Binding Converter={StaticResource RightPercentageConverter}}"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="1" Width="2" Height="6" HorizontalAlignment="Left" BorderThickness="1, 0, 1, 0" BorderBrush="Black" SnapsToDevicePixels="True" />
+                                    </Grid>
+                                    <!--<Border Grid.Row="1" Width="2" Height="6" Margin="{Binding Converter={StaticResource IntToMarginConverter}}" Tag="{Binding Tag}" HorizontalAlignment="Left" BorderThickness="1, 0, 1, 0" Background="Black" BorderBrush="Black" SnapsToDevicePixels="True" />-->
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Grid />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                        <ProgressBar Grid.Row="1"  Value="{Binding BarValue, RelativeSource={RelativeSource TemplatedParent}}" Maximum="1" SmallChange="0.01" LargeChange="0.1" MinHeight="14"/>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
