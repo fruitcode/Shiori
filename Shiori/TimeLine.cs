@@ -1,17 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-//using System.Windows.Data;
-//using System.Windows.Documents;
 using System.Windows.Input;
-//using System.Windows.Media;
-//using System.Windows.Media.Imaging;
-//using System.Windows.Navigation;
-//using System.Windows.Shapes;
 
 namespace Shiori
 {
@@ -36,24 +27,25 @@ namespace Shiori
             }
         }
 
-        public static readonly DependencyProperty BarValueProperty = DependencyProperty.Register("BarValue", typeof(double), typeof(TimeLine), new PropertyMetadata(0.2));
-        public double BarValue {
+        public static readonly DependencyProperty BarValueProperty = DependencyProperty.Register("BarValue", typeof(double), typeof(TimeLine), new PropertyMetadata(0.0));
+        public double BarValue
+        {
             get { return (double)GetValue(BarValueProperty); }
             set { SetValue(BarValueProperty, value); }
         }
-        
-        static TimeLine()
-        {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(TimeLine), new FrameworkPropertyMetadata(typeof(TimeLine)));
-        }
 
-        public static readonly DependencyProperty ItemsSourceProperty =
+        public static readonly DependencyProperty BookmarksSourceProperty =
                 DependencyProperty.Register("BookmarksSource", typeof(object), typeof(TimeLine), new PropertyMetadata(0));
 
         public object BookmarksSource
         {
-            get { return (object)GetValue(ItemsSourceProperty); }
-            set { SetValue(ItemsSourceProperty, value); }
+            get { return (object)GetValue(BookmarksSourceProperty); }
+            set { SetValue(BookmarksSourceProperty, value); }
+        }
+
+        static TimeLine()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(TimeLine), new FrameworkPropertyMetadata(typeof(TimeLine)));
         }
 
         protected override void OnMouseMove(MouseEventArgs e)

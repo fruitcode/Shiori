@@ -37,7 +37,7 @@ namespace Shiori
 
         ObservableCollection<double> _BordersList;
 
-        public ObservableCollection<double> BordersList
+        public ObservableCollection<double> BookmarksList
         {
             get { return _BordersList; }
             set
@@ -47,10 +47,6 @@ namespace Shiori
             }
         }
 
-
-
-        List<Border> bookmarksDashes = new List<Border>();
-
         KeyboardHook globalHotkeys;
 
         public MainWindow()
@@ -58,14 +54,13 @@ namespace Shiori
             InitializeComponent();
 
             this.Loaded += MainWindow_Loaded;
-            this.SizeChanged += MainWindow_SizeChanged;
             this.Closing += MainWindow_Closing;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            BordersList = new ObservableCollection<double>();
-            myTimeLine.BookmarksSource = BordersList;
+            BookmarksList = new ObservableCollection<double>();
+            myTimeLine.BookmarksSource = BookmarksList;
             playlistManager = new PlaylistManager();
             BindPlaylist();
 
@@ -95,7 +90,7 @@ namespace Shiori
             catch
             {
                 MessageBox.Show("Unable to register global hotkeys", "Error");
-            }            
+            }
         }
 
         void GlobalHotKeyPressed(object sender, KeyPressedEventArgs e)
@@ -178,40 +173,7 @@ namespace Shiori
         {
             double p = time / (double)playlistManager.CurrentElement.Duration;
 
-            Border border = new Border()
-            {
-                Width = 2,
-                Height = 6,
-                HorizontalAlignment = System.Windows.HorizontalAlignment.Left,
-                Margin = new Thickness(myTimeLine.ActualWidth * p - 1, 2, 0, 2),
-                BorderThickness = new Thickness(1, 0, 1, 0),
-                BorderBrush = new SolidColorBrush(Colors.Black),
-                SnapsToDevicePixels = true,
-                Tag = p
-            };
-
-            BordersList.Add(p*100);
-
-            //Grid.SetRow(border, 0);
-
-            bookmarksDashes.Add(border);
-            //TimeLineGrid.Children.Add(border);
-        }
-
-        void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (bookmarksDashes == null)
-                return;
-
-            double p;
-            Thickness t;
-            foreach (var b in bookmarksDashes)
-            {
-                p = (double)b.Tag;
-                t = b.Margin;
-                t.Left = myTimeLine.ActualWidth * p - 1;
-                b.Margin = t;
-            }
+            BookmarksList.Add(p * 100);
         }
 
         private void PlaylistListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -239,9 +201,6 @@ namespace Shiori
             InfoLabelArtistAlbum.Content = element.ArtistAlbum;
             InfoLabelTitle.Content = element.Title;
 
-            // clear old bookmarks and place bookmarks for new file
-            foreach (var b in bookmarksDashes) { TimeLineGrid.Children.Remove(b); }
-            bookmarksDashes.Clear();
             foreach (int t in playlistManager.CurrentElement.Bookmarks) { AddBookmark(t); }
 
             if (!player.StartPlayback())
