@@ -198,9 +198,9 @@ namespace Shiori
             playlistManager.NowPlayingIndex = playlistManager.PlaylistElementsArray.IndexOf(element);
             player.OpenFile(element.FilePath, TStreamFormat.sfAutodetect);
 
-            InfoLabelArtistAlbum.Content = element.ArtistAlbum;
-            InfoLabelTitle.Content = element.Title;
+            this.Title = element.Title + " - Shiori";
 
+            BookmarksList.Clear();
             foreach (int t in playlistManager.CurrentElement.Bookmarks) { AddBookmark(t); }
 
             if (!player.StartPlayback())

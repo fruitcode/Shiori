@@ -35,24 +35,18 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" x:Name="InfoLabelArtistAlbum" Content="Artist - Album" Opacity="0.7" Padding="0 0 0 0"/>
-            <Label Grid.Row="1" x:Name="InfoLabelTitle" Content="Title" FontWeight="Bold" Padding="0 0 0 0"/>
+            <Label Grid.Column="0" x:Name="PlaylistNameLabel" Content="Untitled Playlist *" Padding="0 6 0 6"/>
+            <Button Grid.Column="1" Content="Save" Padding="8 0 8 0" Margin="0 0 8 0"/>
+            <Button Grid.Column="2" Content="Open" Padding="8 0 8 0"/>
         </Grid>
-        
-        
-        <Grid Grid.Row="1" Margin="0 4 0 4" x:Name="TimeLineGrid">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <!--<Border Grid.Row="0" BorderThickness="1 0 1 0" BorderBrush="Black" Width="2" Height="6" HorizontalAlignment="Left" Margin="0 2 0 2"/>-->
-            <Shiori:TimeLine x:Name="myTimeLine" Grid.Row="1" BookmarksSource="{Binding BordersList}"/>
-        </Grid>
+
+        <Shiori:TimeLine x:Name="myTimeLine" Grid.Row="1" BookmarksSource="{Binding BordersList}" Margin="0 4 0 4"/>
 
         <ListView x:Name="PlaylistListBox" Grid.Row="2"
                  AllowDrop="True" Drop="PlaylistListBox_Drop" SelectionMode="Extended"
