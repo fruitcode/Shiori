@@ -193,6 +193,8 @@ namespace Shiori
             else
             {
                 player = new ZPlay();
+                int _volume = (int)volumeSlider.Value;
+                player.SetMasterVolume(_volume, _volume);
             }
 
             playlistManager.NowPlayingIndex = playlistManager.PlaylistElementsArray.IndexOf(element);
@@ -289,6 +291,12 @@ namespace Shiori
             {
                 handler(this, new PropertyChangedEventArgs(Value));
             }
+        }
+
+        private void volumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (player != null)
+                player.SetMasterVolume((int)e.NewValue, (int)e.NewValue);
         }
     }
 }

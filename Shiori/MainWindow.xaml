@@ -46,7 +46,15 @@
             <Button Grid.Column="2" Content="Open" Padding="8 0 8 0"/>
         </Grid>
 
-        <Shiori:TimeLine x:Name="myTimeLine" Grid.Row="1" BookmarksSource="{Binding BordersList}" Margin="0 4 0 4"/>
+        <Grid Grid.Row="1" Margin="0 4 0 4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="80"/>
+            </Grid.ColumnDefinitions>
+            
+            <Shiori:TimeLine x:Name="myTimeLine" Grid.Column="0" BookmarksSource="{Binding BordersList}" Margin="0 0 8 0" VerticalAlignment="Center"/>
+            <Slider x:Name="volumeSlider" Value="50" Grid.Column="1" VerticalAlignment="Center" ValueChanged="volumeSlider_ValueChanged" Maximum="100"/>
+        </Grid>
 
         <ListView x:Name="PlaylistListBox" Grid.Row="2"
                  AllowDrop="True" Drop="PlaylistListBox_Drop" SelectionMode="Extended"
