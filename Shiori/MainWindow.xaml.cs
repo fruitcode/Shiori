@@ -32,8 +32,11 @@ namespace Shiori
         private Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
 
         PlaylistManager playlistManager;
+        PlaylistElement currentPlaylistElement;
+        ListeningProgressRange currentListeningRange;
         ZPlay player;
         Timer updateTimeLineTimer;
+        TCallbackFunc myZPlayCallbackFunction;
 
         ObservableCollection<double> _BordersList;
 
@@ -55,6 +58,8 @@ namespace Shiori
 
             this.Loaded += MainWindow_Loaded;
             this.Closing += MainWindow_Closing;
+
+            myZPlayCallbackFunction = new TCallbackFunc(ZPlayCallbackFunction);
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -101,31 +106,39 @@ namespace Shiori
             TStreamTime t;
             switch (e.Key)
             {
-                case Key.J:
+                case Key.J: // backward 5 seconds
+                    FinishListeningRange();
                     t = new TStreamTime() { sec = 5 };
                     player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromCurrentBackward);
+                    StartListeningRange();
                     break;
-                case Key.K:
+                case Key.K: // forward 10 seconds
+                    FinishListeningRange();
                     t = new TStreamTime() { sec = 10 };
                     player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromCurrentForward);
+                    StartListeningRange();
                     break;
-                case Key.M:
+                case Key.M: // add bookmark
                     t = new TStreamTime();
                     player.GetPosition(ref t);
                     playlistManager.CurrentElement.AddBookmark((int)t.sec);
                     AddBookmark((int)t.sec);
                     break;
-                case Key.H:
+                case Key.H: // go to previous bookmark
+                    FinishListeningRange();
                     t = new TStreamTime();
                     player.GetPosition(ref t);
                     t = playlistManager.CurrentElement.GetPreviousBookmark(t);
                     player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromBeginning);
+                    StartListeningRange();
                     break;
-                case Key.L:
+                case Key.L: // go to next bookmark
+                    FinishListeningRange();
                     t = new TStreamTime();
                     player.GetPosition(ref t);
                     t = playlistManager.CurrentElement.GetNextBookmark(t);
                     player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromBeginning);
+                    StartListeningRange();
                     break;
                 case Key.U:
                     TStreamStatus s = new TStreamStatus();
@@ -142,17 +155,18 @@ namespace Shiori
 
         void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            ClosePlaylist();
             globalHotkeys.Dispose();
-
-            playlistManager.Save();
         }
 
         void myTimeLine_PositionChanged(object sender, PositionChangedEventArgs e)
         {
             if (player != null)
             {
+                FinishListeningRange();
                 TStreamTime newPos = new TStreamTime() { sec = (uint)(playlistManager.CurrentElement.Duration * e.NewValue) };
                 player.Seek(TTimeFormat.tfSecond, ref newPos, TSeekMethod.smFromBeginning);
+                StartListeningRange();
             }
         }
 
@@ -181,8 +195,10 @@ namespace Shiori
             if (e.ClickCount != 2)
                 return;
 
-            PlaylistElement element;
-            if ((element = PlaylistListBox.SelectedItem as PlaylistElement) == null)
+            if (currentListeningRange != null)
+                FinishListeningRange();
+
+            if ((currentPlaylistElement = PlaylistListBox.SelectedItem as PlaylistElement) == null)
                 return;
 
             if (player != null)
@@ -197,18 +213,59 @@ namespace Shiori
                 player.SetMasterVolume(_volume, _volume);
             }
 
-            playlistManager.NowPlayingIndex = playlistManager.PlaylistElementsArray.IndexOf(element);
-            player.OpenFile(element.FilePath, TStreamFormat.sfAutodetect);
+            playlistManager.NowPlayingIndex = playlistManager.PlaylistElementsArray.IndexOf(currentPlaylistElement);
+            player.OpenFile(currentPlaylistElement.FilePath, TStreamFormat.sfAutodetect);
 
-            this.Title = element.Title + " - Shiori";
+            this.Title = currentPlaylistElement.Title + " - Shiori";
 
             BookmarksList.Clear();
             foreach (int t in playlistManager.CurrentElement.Bookmarks) { AddBookmark(t); }
 
-            if (!player.StartPlayback())
+            // TODO: start from position where playback have been stopped last time
+            if (player.StartPlayback())
+            {
+                currentListeningRange = new ListeningProgressRange();
+                player.SetCallbackFunc(myZPlayCallbackFunction, (TCallbackMessage)TCallbackMessage.MsgStop, 0);
+            } else {
                 Console.WriteLine("Unable to start playback: " + player.GetError());
+            }
 
             updateTimeLineTimer = new Timer(UpdateTimeLineValue, null, 0, 500);
+        }
+
+        private int ZPlayCallbackFunction(uint objptr, int user_data, TCallbackMessage msg, uint param1, uint param2)
+        {
+            if (currentListeningRange == null)
+            {
+                // Media is stopped because was started playback of another media
+                // So, we've already updated ListeningRange for previous media
+                return 0;
+            }
+
+            TStreamInfo info = new TStreamInfo();
+            player.GetStreamInfo(ref info);
+            TStreamTime t = info.Length;
+            currentListeningRange.End = t.ms;
+            currentPlaylistElement.AddProgressRange(currentListeningRange);
+            currentPlaylistElement = null;
+            return 0;
+        }
+
+        private void FinishListeningRange()
+        {
+            TStreamTime t = new TStreamTime();
+            player.GetPosition(ref t);
+            currentListeningRange.End = t.ms;
+            currentPlaylistElement.AddProgressRange(currentListeningRange);
+            currentListeningRange = null;
+        }
+
+        private void StartListeningRange()
+        {
+            TStreamTime t = new TStreamTime();
+            player.GetPosition(ref t);
+            currentListeningRange = new ListeningProgressRange();
+            currentListeningRange.Start = t.ms;
         }
 
         private void PlaylistListBox_Drop(object sender, DragEventArgs e)
@@ -222,7 +279,7 @@ namespace Shiori
                 {
                     if (f.IndexOf(".shiori") == f.Length - 7 && f.Length > 7)
                     {
-                        playlistManager.Save();
+                        ClosePlaylist();
                         playlistManager = new PlaylistManager(f);
                         BindPlaylist();
                         break;
@@ -231,6 +288,13 @@ namespace Shiori
                         playlistManager.AddFile(f);
                 }
             }
+        }
+
+        private void ClosePlaylist()
+        {
+            if (currentListeningRange != null)
+                FinishListeningRange();
+            playlistManager.Save();
         }
 
         private void BindPlaylist()

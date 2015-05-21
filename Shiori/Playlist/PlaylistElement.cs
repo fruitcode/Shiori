@@ -17,6 +17,7 @@ namespace Shiori.Playlist
         public String ArtistAlbum { get; set; }
         public String Title { get; set; }
         public int Tracknumber { get; set; }
+        public List<ListeningProgressRange> Progress { get; set; }
 
         private List<int> pBookmarks = new List<int>();
         public List<int> Bookmarks { get { return pBookmarks; } set { pBookmarks = value; } }
@@ -55,6 +56,58 @@ namespace Shiori.Playlist
         {
             pBookmarks.Add(t);
             IsSaved = false;
+        }
+
+        public void AddProgressRange(ListeningProgressRange _range)
+        {
+            if (Progress == null)
+                Progress = new List<ListeningProgressRange>();
+
+            IsSaved = false;
+
+            Progress.Add(_range);
+
+            List<ListeningProgressRange> tmp = Progress;
+            Progress = new List<ListeningProgressRange>();
+            List<ListeningProgressRange> deleteFromList;
+
+            while (tmp.Count > 0)
+            {
+                ListeningProgressRange range1 = tmp[0];
+
+                deleteFromList = new List<ListeningProgressRange>();
+                deleteFromList.Add(range1);
+                // if some ListeningProgressRanges have been merged in current step,
+                // we have items to delete from 'tmp' array and we should iterate
+                // through this array one more time to check if we can merge more items
+                while (deleteFromList.Count > 0)
+                {
+                    foreach (var r in deleteFromList)
+                        tmp.Remove(r);
+                    deleteFromList.Clear();
+
+                    foreach (var range2 in tmp)
+                        if (!(range1.Start > range2.End || range1.End < range2.Start)) // merge if intersects
+                        {
+                            range1.Merge(range2);
+                            deleteFromList.Add(range2);
+                        }
+                }
+
+                Progress.Add(range1);
+            }
+#if DEBUG
+            PrintListeningProgress();
+#endif
+        }
+
+        public void PrintListeningProgress()
+        {
+            Console.WriteLine("====================");
+            foreach (var lpr in Progress)
+            {
+                Console.WriteLine("-- {0} -> {1}", lpr.Start, lpr.End);
+            }
         }
     }
 }
