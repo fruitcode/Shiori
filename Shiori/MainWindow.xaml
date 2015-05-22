@@ -73,7 +73,7 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Grid.Row="0" Text="{Binding Path=Title}"/>
-                                    <Shiori:ListeningProgressBar Grid.Row="1" ListeningProgressSource="{Binding Path=ProgressPercents}" Height="6" Width="200" Background="#22000000"/>
+                                    <Shiori:ListeningProgressBar Grid.Row="1" ListeningProgressSource="{Binding Path=ProgressPercents}" Height="6" MinWidth="200" Background="#22000000" HorizontalAlignment="Left"/>
                                 </Grid>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>

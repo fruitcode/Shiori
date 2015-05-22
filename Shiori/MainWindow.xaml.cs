@@ -142,6 +142,18 @@ namespace Shiori
             globalHotkeys.Dispose();
         }
 
+        private void ClosePlaylist()
+        {
+            if (player != null)
+            {
+                if (currentListeningRange != null)
+                    FinishListeningRange();
+                player.StopPlayback();
+            }
+
+            playlistManager.Save();
+        }
+
         void myTimeLine_PositionChanged(object sender, PositionChangedEventArgs e)
         {
             if (player != null)
@@ -171,8 +183,7 @@ namespace Shiori
             if (e.ClickCount != 2)
                 return;
 
-            if (currentListeningRange != null)
-                FinishListeningRange();
+            FinishListeningRange();
 
             if ((currentPlaylistElement = PlaylistListBox.SelectedItem as PlaylistElement) == null)
                 return;
@@ -219,15 +230,27 @@ namespace Shiori
 
             TStreamInfo info = new TStreamInfo();
             player.GetStreamInfo(ref info);
-            TStreamTime t = info.Length;
-            currentListeningRange.End = t.ms;
-            currentPlaylistElement.AddProgressRange(currentListeningRange);
+            TStreamTime time = info.Length;
+            currentListeningRange.End = time.ms;
+
+            PlaylistElement _tmpElement = currentPlaylistElement;
             currentPlaylistElement = null;
+
+            _dispatcher.BeginInvoke(
+                DispatcherPriority.Normal, new Action(() =>
+                {
+                    _tmpElement.AddProgressRange(currentListeningRange);
+                }
+            ));
+
             return 0;
         }
 
         private void FinishListeningRange()
         {
+            if (currentListeningRange == null)
+                return;
+
             TStreamTime t = new TStreamTime();
             player.GetPosition(ref t);
             currentListeningRange.End = t.ms;
@@ -263,13 +286,6 @@ namespace Shiori
                         playlistManager.AddFile(f);
                 }
             }
-        }
-
-        private void ClosePlaylist()
-        {
-            if (currentListeningRange != null)
-                FinishListeningRange();
-            playlistManager.Save();
         }
 
         private void BindPlaylist()
