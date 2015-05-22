@@ -8,10 +8,6 @@
         <Style x:Key="itemStyle" TargetType="{x:Type ListViewItem}">
             <EventSetter Event="PreviewMouseLeftButtonDown" Handler="PlaylistListBox_MouseDoubleClick"/>
         </Style>
-        
-        <DataTemplate x:Key="CellTemplate_IsCompleted">
-            <CheckBox IsChecked="{Binding Path=IsCompleted}" IsEnabled="False"/>
-        </DataTemplate>
 
         <ControlTemplate x:Key="GroupItem_Template">
             <DockPanel>
@@ -61,7 +57,6 @@
                  ItemContainerStyle="{StaticResource itemStyle}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="" Width="30" CellTemplate="{StaticResource CellTemplate_IsCompleted}"/>
                     <GridViewColumn Header="#" Width="30" DisplayMemberBinding="{Binding Path=Tracknumber}"/>
                     <GridViewColumn Header="Title" Width="300">
                         <GridViewColumn.CellTemplate>

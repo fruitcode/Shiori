@@ -28,9 +28,6 @@ namespace Shiori.Playlist
         [JsonIgnore]
         public ObservableCollection<double> BookmarksPercents { get; set; }
         public uint Duration { get; set; }
-
-        private Boolean pIsCompleted = false;
-        public Boolean IsCompleted { get { return pIsCompleted; } set { pIsCompleted = value; } }
         
         public PlaylistElement()
         {
