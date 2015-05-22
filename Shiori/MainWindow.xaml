@@ -63,7 +63,21 @@
                 <GridView>
                     <GridViewColumn Header="" Width="30" CellTemplate="{StaticResource CellTemplate_IsCompleted}"/>
                     <GridViewColumn Header="#" Width="30" DisplayMemberBinding="{Binding Path=Tracknumber}"/>
-                    <GridViewColumn Header="Title" Width="300" DisplayMemberBinding="{Binding Path=Title}"/>
+                    <GridViewColumn Header="Title" Width="300">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Text="{Binding Path=Title}"/>
+                                    <Shiori:ListeningProgressBar Grid.Row="1" ListeningProgressSource="{Binding Path=ProgressPercents}" Height="6" Width="200" Background="#22000000"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
             <ListView.GroupStyle>

@@ -19,7 +19,10 @@ namespace Shiori.Playlist
         public String ArtistAlbum { get; set; }
         public String Title { get; set; }
         public int Tracknumber { get; set; }
+
         public List<ListeningProgressRange> Progress { get; set; }
+        [JsonIgnore]
+        public ObservableCollection<ListeningProgressRange> ProgressPercents { get; set; }
 
         public List<uint> Bookmarks { get; set; }
         [JsonIgnore]
@@ -116,9 +119,28 @@ namespace Shiori.Playlist
 
                 Progress.Add(range1);
             }
+            RegenerateProgressPercents();
 #if DEBUG
             PrintListeningProgress();
 #endif
+        }
+
+        public void RegenerateProgressPercents()
+        {
+            if (ProgressPercents == null)
+                ProgressPercents = new ObservableCollection<ListeningProgressRange>();
+            else
+                ProgressPercents.Clear();
+
+            if (Progress == null)
+                return;
+
+            foreach (var i in Progress)
+            {
+                ProgressPercents.Add(new ListeningProgressRange() {
+                    Start = (100.0 * i.Start / Duration),
+                    End = (100.0 * i.End / Duration) });
+            }
         }
 
         public void PrintListeningProgress()

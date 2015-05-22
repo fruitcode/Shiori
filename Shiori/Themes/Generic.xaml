@@ -6,6 +6,7 @@
 
     <converters:LeftPercentageConverter x:Key="LeftPercentageConverter"/>
     <converters:RightPercentageConverter x:Key="RightPercentageConverter"/>
+    <converters:WidthPercentageConverter x:Key="WidthPercentageConverter"/>
 
     <Style TargetType="{x:Type local:TimeLine}">
         <Setter Property="Template">
@@ -36,6 +37,36 @@
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
                         <ProgressBar Grid.Row="1"  Value="{Binding BarValue, RelativeSource={RelativeSource TemplatedParent}}" Maximum="1" SmallChange="0.01" LargeChange="0.1" MinHeight="14"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:ListeningProgressBar}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:ListeningProgressBar}">
+                    <Grid Background="{Binding Background,RelativeSource={RelativeSource TemplatedParent}}">
+                        <ItemsControl ItemsSource="{Binding ListeningProgressSource,RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="{Binding Start,Converter={StaticResource LeftPercentageConverter}}"/>
+                                            <ColumnDefinition Width="{Binding Converter={StaticResource WidthPercentageConverter}}"/>
+                                            <ColumnDefinition Width="{Binding End,Converter={StaticResource RightPercentageConverter}}"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="1" BorderThickness="0" Background="Green" SnapsToDevicePixels="True" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Grid/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
