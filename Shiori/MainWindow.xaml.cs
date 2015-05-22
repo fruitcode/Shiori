@@ -31,7 +31,7 @@ namespace Shiori
 
         PlaylistManager playlistManager;
         PlaylistElement currentPlaylistElement;
-        ListeningProgressRange currentListeningRange;
+        //ListeningProgressRange currentListeningRange;
         ZPlay player;
         Timer updateTimeLineTimer;
         TCallbackFunc myZPlayCallbackFunction;
@@ -146,8 +146,8 @@ namespace Shiori
         {
             if (player != null)
             {
-                if (currentListeningRange != null)
-                    FinishListeningRange();
+                FinishListeningRange();
+                currentPlaylistElement = null;
                 player.StopPlayback();
             }
 
@@ -184,9 +184,7 @@ namespace Shiori
                 return;
 
             FinishListeningRange();
-
-            if ((currentPlaylistElement = PlaylistListBox.SelectedItem as PlaylistElement) == null)
-                return;
+            currentPlaylistElement = null;
 
             if (player != null)
             {
@@ -200,6 +198,9 @@ namespace Shiori
                 player.SetMasterVolume(_volume, _volume);
             }
 
+            if ((currentPlaylistElement = PlaylistListBox.SelectedItem as PlaylistElement) == null)
+                return;
+
             playlistManager.NowPlayingIndex = playlistManager.PlaylistElementsArray.IndexOf(currentPlaylistElement);
             player.OpenFile(currentPlaylistElement.FilePath, TStreamFormat.sfAutodetect);
 
@@ -210,7 +211,7 @@ namespace Shiori
             // TODO: start from position where playback have been stopped last time
             if (player.StartPlayback())
             {
-                currentListeningRange = new ListeningProgressRange();
+                currentPlaylistElement.StartProgressRange(0);
                 player.SetCallbackFunc(myZPlayCallbackFunction, (TCallbackMessage)TCallbackMessage.MsgStop, 0);
             } else {
                 Console.WriteLine("Unable to start playback: " + player.GetError());
@@ -221,7 +222,7 @@ namespace Shiori
 
         private int ZPlayCallbackFunction(uint objptr, int user_data, TCallbackMessage msg, uint param1, uint param2)
         {
-            if (currentListeningRange == null)
+            if (currentPlaylistElement == null)
             {
                 // Media is stopped because was started playback of another media
                 // So, we've already updated ListeningRange for previous media
@@ -231,15 +232,13 @@ namespace Shiori
             TStreamInfo info = new TStreamInfo();
             player.GetStreamInfo(ref info);
             TStreamTime time = info.Length;
-            currentListeningRange.End = time.ms;
 
-            PlaylistElement _tmpElement = currentPlaylistElement;
+            var tmp = currentPlaylistElement;
             currentPlaylistElement = null;
-
             _dispatcher.BeginInvoke(
                 DispatcherPriority.Normal, new Action(() =>
                 {
-                    _tmpElement.AddProgressRange(currentListeningRange);
+                    tmp.EndProgressRange(time.ms);
                 }
             ));
 
@@ -248,22 +247,20 @@ namespace Shiori
 
         private void FinishListeningRange()
         {
-            if (currentListeningRange == null)
+            if (currentPlaylistElement == null)
                 return;
 
             TStreamTime t = new TStreamTime();
             player.GetPosition(ref t);
-            currentListeningRange.End = t.ms;
-            currentPlaylistElement.AddProgressRange(currentListeningRange);
-            currentListeningRange = null;
+
+            currentPlaylistElement.EndProgressRange(t.ms);
         }
 
         private void StartListeningRange()
         {
             TStreamTime t = new TStreamTime();
             player.GetPosition(ref t);
-            currentListeningRange = new ListeningProgressRange();
-            currentListeningRange.Start = t.ms;
+            currentPlaylistElement.StartProgressRange(t.ms);
         }
 
         private void PlaylistListBox_Drop(object sender, DragEventArgs e)

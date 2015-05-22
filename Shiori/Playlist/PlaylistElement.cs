@@ -20,9 +20,9 @@ namespace Shiori.Playlist
         public String Title { get; set; }
         public int Tracknumber { get; set; }
 
-        public List<ListeningProgressRange> Progress { get; set; }
+        public ObservableCollection<ListeningProgressRange> Progress { get; set; }
         [JsonIgnore]
-        public ObservableCollection<ListeningProgressRange> ProgressPercents { get; set; }
+        private uint progressStart;
 
         public List<uint> Bookmarks { get; set; }
         [JsonIgnore]
@@ -32,6 +32,11 @@ namespace Shiori.Playlist
         private Boolean pIsCompleted = false;
         public Boolean IsCompleted { get { return pIsCompleted; } set { pIsCompleted = value; } }
         
+        public PlaylistElement()
+        {
+            Progress = new ObservableCollection<ListeningProgressRange>();
+        }
+
         public TStreamTime GetPreviousBookmark(TStreamTime t)
         {
             uint max = 0;
@@ -81,17 +86,45 @@ namespace Shiori.Playlist
             }
         }
 
-        public void AddProgressRange(ListeningProgressRange _range)
+        public void RegeneratePercents()
+        {
+            if (Progress != null) {
+                foreach (var i in Progress)
+                {
+                    i.StartPercent = 100.0 * i.Start / Duration;
+                    i.EndPercent = 100.0 * i.End / Duration;
+                }
+            }
+        }
+
+        public void StartProgressRange(uint t)
+        {
+            progressStart = t;
+        }
+
+        public void EndProgressRange(uint t)
+        {
+            ListeningProgressRange pr = new ListeningProgressRange()
+            {
+                Start = progressStart,
+                StartPercent = 100.0 * progressStart / Duration,
+                End = t,
+                EndPercent = 100.0 * t / Duration
+            };
+
+            Progress.Add(pr);
+            IsSaved = false;
+            progressStart = 0;
+        }
+
+        public void FlattenProgress()
         {
             if (Progress == null)
-                Progress = new List<ListeningProgressRange>();
+                return;
 
-            IsSaved = false;
-
-            Progress.Add(_range);
-
-            List<ListeningProgressRange> tmp = Progress;
-            Progress = new List<ListeningProgressRange>();
+            var tmp = Progress;
+            int prevCount = Progress.Count;
+            Progress = new ObservableCollection<ListeningProgressRange>();
             List<ListeningProgressRange> deleteFromList;
 
             while (tmp.Count > 0)
@@ -119,28 +152,14 @@ namespace Shiori.Playlist
 
                 Progress.Add(range1);
             }
-            RegenerateProgressPercents();
+
+            if (prevCount != Progress.Count)
+                IsSaved = false;
+
 #if DEBUG
             PrintListeningProgress();
+            Console.WriteLine("issaved: {0}", IsSaved);
 #endif
-        }
-
-        public void RegenerateProgressPercents()
-        {
-            if (ProgressPercents == null)
-                ProgressPercents = new ObservableCollection<ListeningProgressRange>();
-            else
-                ProgressPercents.Clear();
-
-            if (Progress == null)
-                return;
-
-            foreach (var i in Progress)
-            {
-                ProgressPercents.Add(new ListeningProgressRange() {
-                    Start = (100.0 * i.Start / Duration),
-                    End = (100.0 * i.End / Duration) });
-            }
         }
 
         public void PrintListeningProgress()

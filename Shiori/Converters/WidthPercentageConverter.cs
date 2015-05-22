@@ -14,7 +14,7 @@ namespace Shiori.Converters
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             ListeningProgressRange r = (ListeningProgressRange)value;
-            return new GridLength(r.End - r.Start, GridUnitType.Star);
+            return new GridLength(r.EndPercent - r.StartPercent, GridUnitType.Star);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

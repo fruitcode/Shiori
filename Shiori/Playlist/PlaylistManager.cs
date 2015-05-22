@@ -34,7 +34,7 @@ namespace Shiori.Playlist
             foreach (var i in PlaylistElementsArray)
             {
                 i.RegenerateBookmarkPercent();
-                i.RegenerateProgressPercents();
+                i.RegeneratePercents();
             }
         }
 
@@ -83,13 +83,20 @@ namespace Shiori.Playlist
 
         public void Save()
         {
+            foreach (var item in PlaylistElementsArray)
+            {
+                item.FlattenProgress();
+            }
+
             Boolean shouldSave = false;
             foreach (var item in PlaylistElementsArray)
+            {
                 if (!item.IsSaved)
                 {
                     shouldSave = true;
                     break;
                 }
+            }
             if (!shouldSave && IsSaved) return;
 
             MessageBoxResult result = MessageBox.Show("Do you want to save changes of playlist?", "Shiori", MessageBoxButton.YesNo);

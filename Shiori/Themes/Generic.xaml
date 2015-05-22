@@ -53,9 +53,9 @@
                                 <DataTemplate>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="{Binding Start,Converter={StaticResource LeftPercentageConverter}}"/>
+                                            <ColumnDefinition Width="{Binding StartPercent,Converter={StaticResource LeftPercentageConverter}}"/>
                                             <ColumnDefinition Width="{Binding Converter={StaticResource WidthPercentageConverter}}"/>
-                                            <ColumnDefinition Width="{Binding End,Converter={StaticResource RightPercentageConverter}}"/>
+                                            <ColumnDefinition Width="{Binding EndPercent,Converter={StaticResource RightPercentageConverter}}"/>
                                         </Grid.ColumnDefinitions>
                                         <Border Grid.Column="1" BorderThickness="0" Background="Green" SnapsToDevicePixels="True" />
                                     </Grid>
