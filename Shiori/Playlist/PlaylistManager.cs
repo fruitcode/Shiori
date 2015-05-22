@@ -30,6 +30,11 @@ namespace Shiori.Playlist
         {
             _playlistPath = playlistPath;
             PlaylistElementsArray = JsonConvert.DeserializeObject<ObservableCollection<PlaylistElement>>(File.ReadAllText(playlistPath));
+
+            foreach (var i in PlaylistElementsArray)
+            {
+                i.RegenerateBookmarkPercent();
+            }
         }
 
         public void AddFile(String filePath)
@@ -41,7 +46,6 @@ namespace Shiori.Playlist
             }
 
             PlaylistElement emt = new PlaylistElement();
-            emt.AddBookmark(0); // also, set IsSaved to false here
             emt.FilePath = filePath;
             UpdateMutualPath(filePath);
 
@@ -68,6 +72,7 @@ namespace Shiori.Playlist
             TStreamInfo streamInfo = new TStreamInfo();
             player.GetStreamInfo(ref streamInfo);
             emt.Duration = streamInfo.Length.ms;
+            emt.AddBookmark(0); // also, set IsSaved to false here
 
             player.Close();
 

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 using libZPlay;
 using Newtonsoft.Json;
@@ -19,8 +21,9 @@ namespace Shiori.Playlist
         public int Tracknumber { get; set; }
         public List<ListeningProgressRange> Progress { get; set; }
 
-        private List<int> pBookmarks = new List<int>();
-        public List<int> Bookmarks { get { return pBookmarks; } set { pBookmarks = value; } }
+        public List<uint> Bookmarks { get; set; }
+        [JsonIgnore]
+        public ObservableCollection<double> BookmarksPercents { get; set; }
         public uint Duration { get; set; }
 
         private Boolean pIsCompleted = false;
@@ -31,10 +34,10 @@ namespace Shiori.Playlist
             uint max = 0;
             uint current = t.ms - 1000; // minus one second, to leave a time to skip to previous bookmark when double-clicking 'back' button
 
-            foreach (var i in pBookmarks)
+            foreach (var i in Bookmarks)
             {
                 if (i > max && i < current)
-                    max = (uint)i;
+                    max = i;
             }
             return new TStreamTime() { ms = max };
         }
@@ -44,18 +47,35 @@ namespace Shiori.Playlist
             uint min = Duration;
             uint current = t.ms;
 
-            foreach (var i in pBookmarks)
+            foreach (var i in Bookmarks)
             {
                 if (i < min && i > current)
-                    min = (uint)i;
+                    min = i;
             }
             return new TStreamTime() { ms = min };
         }
 
-        public void AddBookmark(int t)
+        public void AddBookmark(uint t)
         {
-            pBookmarks.Add(t);
+            if (Bookmarks == null)
+            {
+                Bookmarks = new List<uint>();
+                BookmarksPercents = new ObservableCollection<double>();
+            }
+
+            Bookmarks.Add(t);
+            BookmarksPercents.Add(100.0 * t / Duration);
             IsSaved = false;
+        }
+
+        public void RegenerateBookmarkPercent()
+        {
+            BookmarksPercents = new ObservableCollection<double>();
+
+            foreach (var i in Bookmarks)
+            {
+                BookmarksPercents.Add(100.0 * i / Duration);
+            }
         }
 
         public void AddProgressRange(ListeningProgressRange _range)

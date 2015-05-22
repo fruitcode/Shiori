@@ -19,8 +19,6 @@ using System.IO; // FileInfo
 using libZPlay;
 using Shiori.Lib;
 using Shiori.Playlist;
-using System.ComponentModel;
-using System.Collections.ObjectModel;
 
 namespace Shiori
 {
@@ -38,18 +36,6 @@ namespace Shiori
         Timer updateTimeLineTimer;
         TCallbackFunc myZPlayCallbackFunction;
 
-        ObservableCollection<double> _BordersList;
-
-        public ObservableCollection<double> BookmarksList
-        {
-            get { return _BordersList; }
-            set
-            {
-                _BordersList = value;
-                OnPropertyChanged("BordersList");
-            }
-        }
-
         KeyboardHook globalHotkeys;
 
         public MainWindow()
@@ -64,8 +50,6 @@ namespace Shiori
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            BookmarksList = new ObservableCollection<double>();
-            myTimeLine.BookmarksSource = BookmarksList;
             playlistManager = new PlaylistManager();
             BindPlaylist();
 
@@ -121,8 +105,7 @@ namespace Shiori
                 case Key.M: // add bookmark
                     t = new TStreamTime();
                     player.GetPosition(ref t);
-                    playlistManager.CurrentElement.AddBookmark((int)t.ms);
-                    AddBookmark((int)t.ms);
+                    playlistManager.CurrentElement.AddBookmark(t.ms);
                     break;
                 case Key.H: // go to previous bookmark
                     FinishListeningRange();
@@ -183,13 +166,6 @@ namespace Shiori
             ));
         }
 
-        private void AddBookmark(int time)
-        {
-            double p = time / (double)playlistManager.CurrentElement.Duration;
-
-            BookmarksList.Add(p * 100);
-        }
-
         private void PlaylistListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount != 2)
@@ -218,8 +194,7 @@ namespace Shiori
 
             this.Title = currentPlaylistElement.Title + " - Shiori";
 
-            BookmarksList.Clear();
-            foreach (int t in playlistManager.CurrentElement.Bookmarks) { AddBookmark(t); }
+            myTimeLine.BookmarksSource = playlistManager.CurrentElement.BookmarksPercents;
 
             // TODO: start from position where playback have been stopped last time
             if (player.StartPlayback())
@@ -344,17 +319,6 @@ namespace Shiori
                 selected.Add(f);
             foreach (PlaylistElement f in selected)
                 playlistManager.DeleteElement(f);
-        }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string Value)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(Value));
-            }
         }
 
         private void volumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
