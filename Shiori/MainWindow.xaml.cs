@@ -121,15 +121,15 @@ namespace Shiori
                 case Key.M: // add bookmark
                     t = new TStreamTime();
                     player.GetPosition(ref t);
-                    playlistManager.CurrentElement.AddBookmark((int)t.sec);
-                    AddBookmark((int)t.sec);
+                    playlistManager.CurrentElement.AddBookmark((int)t.ms);
+                    AddBookmark((int)t.ms);
                     break;
                 case Key.H: // go to previous bookmark
                     FinishListeningRange();
                     t = new TStreamTime();
                     player.GetPosition(ref t);
                     t = playlistManager.CurrentElement.GetPreviousBookmark(t);
-                    player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromBeginning);
+                    player.Seek(TTimeFormat.tfMillisecond, ref t, TSeekMethod.smFromBeginning);
                     StartListeningRange();
                     break;
                 case Key.L: // go to next bookmark
@@ -137,7 +137,7 @@ namespace Shiori
                     t = new TStreamTime();
                     player.GetPosition(ref t);
                     t = playlistManager.CurrentElement.GetNextBookmark(t);
-                    player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromBeginning);
+                    player.Seek(TTimeFormat.tfMillisecond, ref t, TSeekMethod.smFromBeginning);
                     StartListeningRange();
                     break;
                 case Key.U:
@@ -164,8 +164,8 @@ namespace Shiori
             if (player != null)
             {
                 FinishListeningRange();
-                TStreamTime newPos = new TStreamTime() { sec = (uint)(playlistManager.CurrentElement.Duration * e.NewValue) };
-                player.Seek(TTimeFormat.tfSecond, ref newPos, TSeekMethod.smFromBeginning);
+                TStreamTime newPos = new TStreamTime() { ms = (uint)(playlistManager.CurrentElement.Duration * e.NewValue) };
+                player.Seek(TTimeFormat.tfMillisecond, ref newPos, TSeekMethod.smFromBeginning);
                 StartListeningRange();
             }
         }
@@ -178,7 +178,7 @@ namespace Shiori
             _dispatcher.BeginInvoke(
                 DispatcherPriority.Normal, new Action(() =>
                 {
-                    myTimeLine.Value = t.sec / (double)playlistManager.CurrentElement.Duration;
+                    myTimeLine.Value = t.ms / (double)playlistManager.CurrentElement.Duration;
                 }
             ));
         }

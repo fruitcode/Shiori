@@ -67,7 +67,7 @@ namespace Shiori.Playlist
 
             TStreamInfo streamInfo = new TStreamInfo();
             player.GetStreamInfo(ref streamInfo);
-            emt.Duration = streamInfo.Length.sec;
+            emt.Duration = streamInfo.Length.ms;
 
             player.Close();
 

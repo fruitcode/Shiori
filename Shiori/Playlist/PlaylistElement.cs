@@ -29,27 +29,27 @@ namespace Shiori.Playlist
         public TStreamTime GetPreviousBookmark(TStreamTime t)
         {
             uint max = 0;
-            uint current = t.sec - 1; // minus one second, to leave a time to skip to previous bookmark when double-clicking 'back' button
+            uint current = t.ms - 1000; // minus one second, to leave a time to skip to previous bookmark when double-clicking 'back' button
 
             foreach (var i in pBookmarks)
             {
                 if (i > max && i < current)
                     max = (uint)i;
             }
-            return new TStreamTime() { sec = max };
+            return new TStreamTime() { ms = max };
         }
 
         public TStreamTime GetNextBookmark(TStreamTime t)
         {
             uint min = Duration;
-            uint current = t.sec;
+            uint current = t.ms;
 
             foreach (var i in pBookmarks)
             {
                 if (i < min && i > current)
                     min = (uint)i;
             }
-            return new TStreamTime() { sec = min };
+            return new TStreamTime() { ms = min };
         }
 
         public void AddBookmark(int t)
