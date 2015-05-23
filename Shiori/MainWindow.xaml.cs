@@ -126,10 +126,13 @@ namespace Shiori
                 case Key.U:
                     TStreamStatus s = new TStreamStatus();
                     player.GetStatus(ref s);
-                    if (s.fPause)
+                    if (s.fPause) {
                         player.ResumePlayback();
-                    else if (s.fPlay)
+                        StartUpdateTimer();
+                    } else if (s.fPlay) {
                         player.PausePlayback();
+                        StopUpdateTimer();
+                    }
                     break;
                 default:
                     break;
@@ -165,8 +168,21 @@ namespace Shiori
             }
         }
 
+        private void StartUpdateTimer()
+        {
+            if (updateTimeLineTimer == null)
+                updateTimeLineTimer = new Timer(UpdateTimeLineValue, null, 0, 500);
+        }
+
+        private void StopUpdateTimer()
+        {
+            updateTimeLineTimer.Dispose();
+            updateTimeLineTimer = null;
+        }
+
         private void UpdateTimeLineValue(object state)
         {
+            Console.Write("#");
             TStreamTime t = new TStreamTime();
             player.GetPosition(ref t);
 
@@ -218,7 +234,7 @@ namespace Shiori
                 Console.WriteLine("Unable to start playback: " + player.GetError());
             }
 
-            updateTimeLineTimer = new Timer(UpdateTimeLineValue, null, 0, 500);
+            StartUpdateTimer();
         }
 
         private int ZPlayCallbackFunction(uint objptr, int user_data, TCallbackMessage msg, uint param1, uint param2)
@@ -229,6 +245,8 @@ namespace Shiori
                 // So, we've already updated ListeningRange for previous media
                 return 0;
             }
+
+            StopUpdateTimer();
 
             TStreamInfo info = new TStreamInfo();
             player.GetStreamInfo(ref info);
