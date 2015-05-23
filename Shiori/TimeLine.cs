@@ -35,7 +35,7 @@ namespace Shiori
         }
 
         public static readonly DependencyProperty BookmarksSourceProperty =
-                DependencyProperty.Register("BookmarksSource", typeof(object), typeof(TimeLine), new PropertyMetadata(0));
+                DependencyProperty.Register("BookmarksSource", typeof(object), typeof(TimeLine), new PropertyMetadata(null));
 
         public object BookmarksSource
         {

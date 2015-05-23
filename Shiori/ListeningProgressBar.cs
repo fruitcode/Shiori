@@ -9,7 +9,7 @@ namespace Shiori
     public class ListeningProgressBar : Control
     {
         public static readonly DependencyProperty ListeningProgressSourceProperty =
-                DependencyProperty.Register("ListeningProgressSource", typeof(object), typeof(ListeningProgressBar), new PropertyMetadata(0));
+                DependencyProperty.Register("ListeningProgressSource", typeof(object), typeof(ListeningProgressBar), new PropertyMetadata(null));
 
         public object ListeningProgressSource
         {
