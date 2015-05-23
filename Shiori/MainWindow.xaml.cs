@@ -206,7 +206,8 @@ namespace Shiori
 
             this.Title = currentPlaylistElement.Title + " - Shiori";
 
-            myTimeLine.BookmarksSource = playlistManager.CurrentElement.BookmarksPercents;
+            myTimeLine.BookmarksSource = currentPlaylistElement.BookmarksPercents;
+            myListeningProgressBar.ListeningProgressSource = currentPlaylistElement.Progress;
 
             // TODO: start from position where playback have been stopped last time
             if (player.StartPlayback())

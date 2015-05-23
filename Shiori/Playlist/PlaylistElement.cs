@@ -119,27 +119,27 @@ namespace Shiori.Playlist
             if (Progress == null)
                 return;
 
-            var tmp = Progress;
-            int prevCount = Progress.Count;
-            Progress = new ObservableCollection<ListeningProgressRange>();
+            var oldProgress = Progress;
+            int oldProgressCount = oldProgress.Count;
+            var newProgress = new ObservableCollection<ListeningProgressRange>();
             List<ListeningProgressRange> deleteFromList;
 
-            while (tmp.Count > 0)
+            while (oldProgress.Count > 0)
             {
-                ListeningProgressRange range1 = tmp[0];
+                ListeningProgressRange range1 = oldProgress[0];
 
                 deleteFromList = new List<ListeningProgressRange>();
                 deleteFromList.Add(range1);
                 // if some ListeningProgressRanges have been merged in current step,
-                // we have items to delete from 'tmp' array and we should iterate
+                // we have items to delete from 'oldProgress' array and we should iterate
                 // through this array one more time to check if we can merge more items
                 while (deleteFromList.Count > 0)
                 {
                     foreach (var r in deleteFromList)
-                        tmp.Remove(r);
+                        oldProgress.Remove(r);
                     deleteFromList.Clear();
 
-                    foreach (var range2 in tmp)
+                    foreach (var range2 in oldProgress)
                         if (!(range1.Start > range2.End || range1.End < range2.Start)) // merge if intersects
                         {
                             range1.Merge(range2);
@@ -147,25 +147,19 @@ namespace Shiori.Playlist
                         }
                 }
 
-                Progress.Add(range1);
+                newProgress.Add(range1);
             }
 
-            if (prevCount != Progress.Count)
+            Progress = newProgress;
+            if (oldProgressCount != newProgress.Count)
                 IsSaved = false;
 
 #if DEBUG
-            PrintListeningProgress();
-            Console.WriteLine("issaved: {0}", IsSaved);
-#endif
-        }
-
-        public void PrintListeningProgress()
-        {
-            Console.WriteLine("====================");
+            Console.WriteLine("======== {0}", ArtistAlbum);
+            Console.WriteLine("isSaved: {0}", IsSaved);
             foreach (var lpr in Progress)
-            {
                 Console.WriteLine("-- {0} -> {1}", lpr.Start, lpr.End);
-            }
+#endif
         }
     }
 }
