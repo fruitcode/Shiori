@@ -24,26 +24,30 @@
         </ControlTemplate>
     </Window.Resources>
     
-    <Grid Margin="6 4 6 6">
+    <Grid Margin="6 0 6 6">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+        
+        <Menu Grid.Row="0" Margin="-6 0 -6 4" BorderThickness="0 0 0 1" BorderBrush="#22000000" Padding="0 1 0 1">
+            <MenuItem Header="_Playlist">
+                <MenuItem Header="_New"/>
+                <MenuItem Header="_Open..."/>
+                <MenuItem Header="_Save"/>
+                <MenuItem Header="Save _As..."/>
+            </MenuItem>
+            <MenuItem Header="_Help"/>
+        </Menu>
 
-            <Label Grid.Column="0" x:Name="PlaylistNameLabel" Content="Untitled Playlist" Padding="0 6 0 6" MouseUp="PlaylistNameLabel_MouseUp"/>
-            <TextBox Grid.Column="0" x:Name="PlaylistNameTextBox" Text="Untitled Playlist" VerticalContentAlignment="Center" Visibility="Collapsed" KeyDown="PlaylistNameTextBox_KeyDown"/>
-            <Button Grid.Column="1" Content="Save" Padding="8 0 8 0" Margin="0 0 8 0"/>
-            <Button Grid.Column="2" Content="Open" Padding="8 0 8 0"/>
-        </Grid>
+        <Label Grid.Row="1" x:Name="PlaylistNameLabel" Content="Untitled Playlist" Padding="4 4 4 4"
+               MouseUp="PlaylistNameLabel_MouseUp" BorderBrush="#11000000" BorderThickness="1 1 1 1" Cursor="IBeam"/>
+        <TextBox Grid.Row="1" x:Name="PlaylistNameTextBox" Text="Untitled Playlist" VerticalContentAlignment="Center"
+                 Visibility="Collapsed" KeyDown="PlaylistNameTextBox_KeyDown"/>
 
-        <Grid Grid.Row="1" Margin="0 4 0 4">
+        <Grid Grid.Row="2" Margin="0 4 0 4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="8"/>
@@ -55,11 +59,11 @@
             </Grid.RowDefinitions>
             
             <Shiori:TimeLine x:Name="myTimeLine" Grid.Column="0" BookmarksSource="{Binding BordersList}" VerticalAlignment="Center"/>
-            <Slider x:Name="volumeSlider" Value="50" Grid.Column="2" Grid.RowSpan="2" VerticalAlignment="Center" ValueChanged="volumeSlider_ValueChanged" Maximum="100"/>
+            <Slider x:Name="volumeSlider" Value="85" Grid.Column="2" Grid.RowSpan="2" VerticalAlignment="Center" ValueChanged="volumeSlider_ValueChanged" Maximum="100"/>
             <Shiori:ListeningProgressBar x:Name="myListeningProgressBar" Grid.Row="1" Grid.Column="0" Height="6" Background="#22000000" HorizontalAlignment="Stretch"/>
         </Grid>
 
-        <ListView x:Name="PlaylistListBox" Grid.Row="2"
+        <ListView x:Name="PlaylistListBox" Grid.Row="3"
                  AllowDrop="True" Drop="PlaylistListBox_Drop" SelectionMode="Extended"
                  ItemContainerStyle="{StaticResource itemStyle}">
             <ListView.View>
