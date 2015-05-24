@@ -345,12 +345,15 @@ namespace Shiori
 
         private void DeleteFiles(Object _o)
         {
-            List<PlaylistElement> selected = new List<PlaylistElement>();
+            int min = 0, max = 0;
+            SelectionRange(ref min, ref max);
+            for (int i = 0; i <= max - min; i++)
+                playlistManager.DeleteElement(min);
 
-            foreach (PlaylistElement f in PlaylistListBox.SelectedItems)
-                selected.Add(f);
-            foreach (PlaylistElement f in selected)
-                playlistManager.DeleteElement(f);
+            if (playlistManager.PlaylistElementsArray.Count <= min)
+                min--;
+
+            PlaylistListBox.SelectedItem = playlistManager.PlaylistElementsArray[min];
         }
 
         private void volumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

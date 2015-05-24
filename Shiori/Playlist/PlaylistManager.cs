@@ -208,9 +208,9 @@ namespace Shiori.Playlist
             IsSaved = false;
         }
 
-        public void DeleteElement(PlaylistElement e)
+        public void DeleteElement(int i)
         {
-            PlaylistElementsArray.Remove(e);
+            PlaylistElementsArray.RemoveAt(i);
             IsSaved = false;
         }
     }
