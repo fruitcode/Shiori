@@ -15,8 +15,10 @@ namespace Shiori.Playlist
     class PlaylistManager
     {
         private Boolean IsSaved = true;
+
         private String _title = "Untitled Playlist";
         public String Title { get { return _title; } set { _title = value; IsSaved = false; } }
+
         public ObservableCollection<PlaylistElement> PlaylistElementsArray;
         private ZPlay player = new ZPlay();
         private DirectoryInfo mutualPath;
@@ -28,6 +30,7 @@ namespace Shiori.Playlist
         {
             PlaylistElementsArray = new ObservableCollection<PlaylistElement>();
         }
+
         public PlaylistManager(String playlistPath)
         {
             _playlistPath = playlistPath;
@@ -37,9 +40,15 @@ namespace Shiori.Playlist
 
             foreach (var i in PlaylistElementsArray)
             {
+                i.PlaylistElementChanged += PlaylistElementChanged;
                 i.RegenerateBookmarkPercent();
                 i.RegeneratePercents();
             }
+        }
+
+        void PlaylistElementChanged()
+        {
+            IsSaved = false;
         }
 
         public void AddFile(String filePath)
@@ -85,47 +94,50 @@ namespace Shiori.Playlist
             IsSaved = false;
         }
 
-        public Boolean Save()
+        public Boolean Save(Boolean showFileDialog = true)
         {
             foreach (var item in PlaylistElementsArray)
-            {
                 item.FlattenProgress();
+
+            if (IsSaved) return true;
+
+            String savePath = _playlistPath;
+
+            if (showFileDialog)
+            {
+                MessageBoxResult result = MessageBox.Show("Do you want to save changes of playlist?", "Shiori", MessageBoxButton.YesNoCancel);
+                if (result == MessageBoxResult.No)
+                    return true;
+                else if (result == MessageBoxResult.Cancel)
+                    return false;
             }
 
-            Boolean shouldSave = false;
-            foreach (var item in PlaylistElementsArray)
+            if (showFileDialog || !(new FileInfo(_playlistPath)).Exists)
             {
-                if (!item.IsSaved)
+                var saveFileDialog = new Microsoft.Win32.SaveFileDialog();
+                saveFileDialog.Filter = "Shiori playlist (*.shiori)|*.shiori";
+
+                if (_playlistPath != null)
                 {
-                    shouldSave = true;
-                    break;
+                    FileInfo _f = new FileInfo(_playlistPath);
+                    saveFileDialog.InitialDirectory = _f.Directory.ToString();
                 }
-            }
-            if (!shouldSave && IsSaved) return true;
-
-            MessageBoxResult result = MessageBox.Show("Do you want to save changes of playlist?", "Shiori", MessageBoxButton.YesNoCancel);
-            if (result == MessageBoxResult.No)
-                return true;
-            else if (result == MessageBoxResult.Cancel)
-                return false;
-
-            var saveFileDialog = new Microsoft.Win32.SaveFileDialog();
-            saveFileDialog.Filter = "Shiori playlist (*.shiori)|*.shiori";
-
-            if (_playlistPath != null)
-                saveFileDialog.InitialDirectory = _playlistPath;
-            else if (mutualPath != null)
-                saveFileDialog.InitialDirectory = mutualPath.ToString();
-
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                PlaylistRecoverData _data = new PlaylistRecoverData()
+                else if (mutualPath != null)
                 {
-                    Title = _title,
-                    Tracks = PlaylistElementsArray
-                };
-                File.WriteAllText(saveFileDialog.FileName, JsonConvert.SerializeObject(_data));
+                    saveFileDialog.InitialDirectory = mutualPath.ToString();
+                }
+
+                if (saveFileDialog.ShowDialog() == true)
+                    savePath = saveFileDialog.FileName;
             }
+
+            PlaylistRecoverData _data = new PlaylistRecoverData()
+            {
+                Title = _title,
+                Tracks = PlaylistElementsArray
+            };
+            File.WriteAllText(savePath, JsonConvert.SerializeObject(_data));
+            IsSaved = true;
 
             return true;
         }

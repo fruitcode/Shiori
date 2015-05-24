@@ -352,6 +352,9 @@ namespace Shiori
             for (int i = 0; i <= max - min; i++)
                 playlistManager.DeleteElement(min);
 
+            if (playlistManager.PlaylistElementsArray.Count == 0)
+                return;
+
             if (playlistManager.PlaylistElementsArray.Count <= min)
                 min--;
 
@@ -387,6 +390,11 @@ namespace Shiori
                 PlaylistNameLabel.Visibility = System.Windows.Visibility.Visible;
                 PlaylistNameTextBox.Visibility = System.Windows.Visibility.Collapsed;
             }
+        }
+
+        private void SaveMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            playlistManager.Save(false);
         }
     }
 }

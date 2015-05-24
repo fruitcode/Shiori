@@ -34,10 +34,10 @@
         
         <Menu Grid.Row="0" Margin="-6 0 -6 4" BorderThickness="0 0 0 1" BorderBrush="#22000000" Padding="0 1 0 1">
             <MenuItem Header="_Playlist">
-                <MenuItem Header="_New"/>
-                <MenuItem Header="_Open..."/>
-                <MenuItem Header="_Save"/>
-                <MenuItem Header="Save _As..."/>
+                <MenuItem Header="_New" IsEnabled="False"/>
+                <MenuItem Header="_Open..." IsEnabled="False"/>
+                <MenuItem Header="_Save" x:Name="SaveMenuItem" Click="SaveMenuItem_Click"/>
+                <MenuItem Header="Save _As..." IsEnabled="False"/>
             </MenuItem>
             <MenuItem Header="_Help"/>
         </Menu>

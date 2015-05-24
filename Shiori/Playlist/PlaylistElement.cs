@@ -12,8 +12,8 @@ namespace Shiori.Playlist
 {
     class PlaylistElement
     {
-        [JsonIgnore]
-        public Boolean IsSaved = true;
+        public delegate void PlaylistElementChangedEventHandler();
+        public event PlaylistElementChangedEventHandler PlaylistElementChanged;
 
         public String FilePath { get; set; }
         public String ArtistAlbum { get; set; }
@@ -32,6 +32,12 @@ namespace Shiori.Playlist
         public PlaylistElement()
         {
             Progress = new ObservableCollection<ListeningProgressRange>();
+        }
+
+        private void OnPlaylistElementChanged()
+        {
+            if (PlaylistElementChanged != null)
+                PlaylistElementChanged();
         }
 
         public TStreamTime GetPreviousBookmark(TStreamTime t)
@@ -70,7 +76,7 @@ namespace Shiori.Playlist
 
             Bookmarks.Add(t);
             BookmarksPercents.Add(100.0 * t / Duration);
-            IsSaved = false;
+            OnPlaylistElementChanged();
         }
 
         public void RegenerateBookmarkPercent()
@@ -110,7 +116,7 @@ namespace Shiori.Playlist
             };
 
             Progress.Add(pr);
-            IsSaved = false;
+            OnPlaylistElementChanged();
             progressStart = 0;
         }
 
@@ -155,7 +161,7 @@ namespace Shiori.Playlist
                 Progress.Add(item);
 
             if (oldProgressCount != newProgress.Count) // if some ProgressRanges have been merged
-                IsSaved = false;
+                OnPlaylistElementChanged();
         }
     }
 }
