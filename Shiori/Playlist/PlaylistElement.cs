@@ -150,7 +150,10 @@ namespace Shiori.Playlist
                 newProgress.Add(range1);
             }
 
-            Progress = newProgress;
+            Progress.Clear();
+            foreach (var item in newProgress)
+                Progress.Add(item);
+
             if (oldProgressCount != newProgress.Count) // if some ProgressRanges have been merged
                 IsSaved = false;
         }

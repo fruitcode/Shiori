@@ -85,7 +85,7 @@ namespace Shiori.Playlist
             IsSaved = false;
         }
 
-        public void Save()
+        public Boolean Save()
         {
             foreach (var item in PlaylistElementsArray)
             {
@@ -101,10 +101,13 @@ namespace Shiori.Playlist
                     break;
                 }
             }
-            if (!shouldSave && IsSaved) return;
+            if (!shouldSave && IsSaved) return true;
 
-            MessageBoxResult result = MessageBox.Show("Do you want to save changes of playlist?", "Shiori", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.No) return;
+            MessageBoxResult result = MessageBox.Show("Do you want to save changes of playlist?", "Shiori", MessageBoxButton.YesNoCancel);
+            if (result == MessageBoxResult.No)
+                return true;
+            else if (result == MessageBoxResult.Cancel)
+                return false;
 
             var saveFileDialog = new Microsoft.Win32.SaveFileDialog();
             saveFileDialog.Filter = "Shiori playlist (*.shiori)|*.shiori";
@@ -123,6 +126,8 @@ namespace Shiori.Playlist
                 };
                 File.WriteAllText(saveFileDialog.FileName, JsonConvert.SerializeObject(_data));
             }
+
+            return true;
         }
 
         private Boolean IsDirectory(String path)

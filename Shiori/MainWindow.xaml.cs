@@ -141,11 +141,12 @@ namespace Shiori
 
         void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            ClosePlaylist();
+            if (ClosePlaylist() == false)
+                e.Cancel = true; // cancel exiting
             globalHotkeys.Dispose();
         }
 
-        private void ClosePlaylist()
+        private Boolean ClosePlaylist()
         {
             if (player != null)
             {
@@ -154,7 +155,7 @@ namespace Shiori
                 player.StopPlayback();
             }
 
-            playlistManager.Save();
+            return playlistManager.Save();
         }
 
         void myTimeLine_PositionChanged(object sender, PositionChangedEventArgs e)
@@ -292,7 +293,8 @@ namespace Shiori
                 {
                     if (f.IndexOf(".shiori") == f.Length - 7 && f.Length > 7)
                     {
-                        ClosePlaylist();
+                        if (ClosePlaylist() == false)
+                            break;
                         playlistManager = new PlaylistManager(f);
                         BindPlaylist();
                         break;
