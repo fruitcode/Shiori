@@ -37,7 +37,8 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Column="0" x:Name="PlaylistNameLabel" Content="Untitled Playlist *" Padding="0 6 0 6"/>
+            <Label Grid.Column="0" x:Name="PlaylistNameLabel" Content="Untitled Playlist" Padding="0 6 0 6" MouseUp="PlaylistNameLabel_MouseUp"/>
+            <TextBox Grid.Column="0" x:Name="PlaylistNameTextBox" Text="Untitled Playlist" VerticalContentAlignment="Center" Visibility="Collapsed" KeyDown="PlaylistNameTextBox_KeyDown"/>
             <Button Grid.Column="1" Content="Save" Padding="8 0 8 0" Margin="0 0 8 0"/>
             <Button Grid.Column="2" Content="Open" Padding="8 0 8 0"/>
         </Grid>

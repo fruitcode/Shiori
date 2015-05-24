@@ -182,7 +182,6 @@ namespace Shiori
 
         private void UpdateTimeLineValue(object state)
         {
-            Console.Write("#");
             TStreamTime t = new TStreamTime();
             player.GetPosition(ref t);
 
@@ -306,6 +305,7 @@ namespace Shiori
 
         private void BindPlaylist()
         {
+            PlaylistNameLabel.Content = playlistManager.Title;
             PlaylistListBox.ItemsSource = playlistManager.PlaylistElementsArray;
 
             System.Windows.Data.CollectionView myView = (System.Windows.Data.CollectionView)System.Windows.Data.CollectionViewSource.GetDefaultView(PlaylistListBox.ItemsSource);
@@ -357,6 +357,31 @@ namespace Shiori
         {
             if (player != null)
                 player.SetMasterVolume((int)e.NewValue, (int)e.NewValue);
+        }
+
+        private void PlaylistNameLabel_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            PlaylistNameTextBox.Text = playlistManager.Title;
+            PlaylistNameLabel.Visibility = System.Windows.Visibility.Hidden;
+            PlaylistNameTextBox.Visibility = System.Windows.Visibility.Visible;
+            PlaylistNameTextBox.Focus();
+            PlaylistNameTextBox.SelectAll();
+        }
+
+        private void PlaylistNameTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                PlaylistNameLabel.Visibility = System.Windows.Visibility.Visible;
+                PlaylistNameTextBox.Visibility = System.Windows.Visibility.Collapsed;
+            }
+            else if (e.Key == Key.Enter)
+            {
+                playlistManager.Title = PlaylistNameTextBox.Text;
+                PlaylistNameLabel.Content = PlaylistNameTextBox.Text;
+                PlaylistNameLabel.Visibility = System.Windows.Visibility.Visible;
+                PlaylistNameTextBox.Visibility = System.Windows.Visibility.Collapsed;
+            }
         }
     }
 }

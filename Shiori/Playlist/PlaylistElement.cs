@@ -151,15 +151,8 @@ namespace Shiori.Playlist
             }
 
             Progress = newProgress;
-            if (oldProgressCount != newProgress.Count)
+            if (oldProgressCount != newProgress.Count) // if some ProgressRanges have been merged
                 IsSaved = false;
-
-#if DEBUG
-            Console.WriteLine("======== {0}", ArtistAlbum);
-            Console.WriteLine("isSaved: {0}", IsSaved);
-            foreach (var lpr in Progress)
-                Console.WriteLine("-- {0} -> {1}", lpr.Start, lpr.End);
-#endif
         }
     }
 }

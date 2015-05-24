@@ -15,6 +15,8 @@ namespace Shiori.Playlist
     class PlaylistManager
     {
         private Boolean IsSaved = true;
+        private String _title = "Untitled Playlist";
+        public String Title { get { return _title; } set { _title = value; IsSaved = false; } }
         public ObservableCollection<PlaylistElement> PlaylistElementsArray;
         private ZPlay player = new ZPlay();
         private DirectoryInfo mutualPath;
@@ -29,7 +31,9 @@ namespace Shiori.Playlist
         public PlaylistManager(String playlistPath)
         {
             _playlistPath = playlistPath;
-            PlaylistElementsArray = JsonConvert.DeserializeObject<ObservableCollection<PlaylistElement>>(File.ReadAllText(playlistPath));
+            PlaylistRecoverData _data = JsonConvert.DeserializeObject<PlaylistRecoverData>(File.ReadAllText(playlistPath));
+            _title = _data.Title;
+            PlaylistElementsArray = _data.Tracks;
 
             foreach (var i in PlaylistElementsArray)
             {
@@ -112,7 +116,12 @@ namespace Shiori.Playlist
 
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllText(saveFileDialog.FileName, JsonConvert.SerializeObject(PlaylistElementsArray));
+                PlaylistRecoverData _data = new PlaylistRecoverData()
+                {
+                    Title = _title,
+                    Tracks = PlaylistElementsArray
+                };
+                File.WriteAllText(saveFileDialog.FileName, JsonConvert.SerializeObject(_data));
             }
         }
 
@@ -204,5 +213,11 @@ namespace Shiori.Playlist
             PlaylistElementsArray.Remove(e);
             IsSaved = false;
         }
+    }
+
+    class PlaylistRecoverData
+    {
+        public String Title;
+        public ObservableCollection<PlaylistElement> Tracks;
     }
 }
