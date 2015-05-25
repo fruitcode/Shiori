@@ -10,10 +10,12 @@ using Newtonsoft.Json;
 
 namespace Shiori.Playlist
 {
-    class PlaylistElement
+    class PlaylistElement : INotifyPropertyChanged
     {
         public delegate void PlaylistElementChangedEventHandler();
         public event PlaylistElementChangedEventHandler PlaylistElementChanged;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public String FilePath { get; set; }
         public String ArtistAlbum { get; set; }
@@ -28,6 +30,8 @@ namespace Shiori.Playlist
         [JsonIgnore]
         public ObservableCollection<double> BookmarksPercents { get; set; }
         public uint Duration { get; set; }
+        [JsonIgnore]
+        public double PercentsCompleted { get; set; }
         
         public PlaylistElement()
         {
@@ -91,13 +95,18 @@ namespace Shiori.Playlist
 
         public void RegeneratePercents()
         {
+            double _totalListened = 0;
+
             if (Progress != null) {
                 foreach (var i in Progress)
                 {
+                    _totalListened += i.End - i.Start;
                     i.StartPercent = 100.0 * i.Start / Duration;
                     i.EndPercent = 100.0 * i.End / Duration;
                 }
             }
+
+            PercentsCompleted = _totalListened / Duration;
         }
 
         public void StartProgressRange(uint t)
@@ -116,6 +125,7 @@ namespace Shiori.Playlist
             };
 
             Progress.Add(pr);
+            FlattenProgress();
             OnPlaylistElementChanged();
             progressStart = 0;
         }
@@ -129,6 +139,7 @@ namespace Shiori.Playlist
             int oldProgressCount = oldProgress.Count;
             var newProgress = new ObservableCollection<ListeningProgressRange>();
             List<ListeningProgressRange> deleteFromList;
+            double _percents = 0;
 
             while (oldProgress.Count > 0)
             {
@@ -154,14 +165,19 @@ namespace Shiori.Playlist
                 }
 
                 newProgress.Add(range1);
+                _percents += ((double)range1.End - range1.Start) / Duration;
             }
 
             Progress.Clear();
             foreach (var item in newProgress)
                 Progress.Add(item);
 
+            PercentsCompleted = _percents;
             if (oldProgressCount != newProgress.Count) // if some ProgressRanges have been merged
                 OnPlaylistElementChanged();
+
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs("PercentsCompleted"));
         }
     }
 }

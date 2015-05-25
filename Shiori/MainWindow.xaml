@@ -5,6 +5,9 @@
         Title="Shiori" Height="450" Width="350"
         Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
     <Window.Resources>
+        <Shiori:DurationValueConverter x:Key="DurationValueConverter"/>
+        <Shiori:PercentsValueConverter x:Key="PercentsValueConverter"/>
+        
         <Style x:Key="itemStyle" TargetType="{x:Type ListViewItem}">
             <EventSetter Event="PreviewMouseLeftButtonDown" Handler="PlaylistListBox_MouseDoubleClick"/>
         </Style>
@@ -23,7 +26,7 @@
             </DockPanel>
         </ControlTemplate>
     </Window.Resources>
-    
+
     <Grid Margin="6 0 6 6">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -69,7 +72,7 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="#" Width="30" DisplayMemberBinding="{Binding Path=Tracknumber}"/>
-                    <GridViewColumn Header="Title" Width="300">
+                    <GridViewColumn Header="Title" Width="240">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -80,6 +83,21 @@
 
                                     <TextBlock Grid.Row="0" Text="{Binding Path=Title}"/>
                                     <Shiori:ListeningProgressBar Grid.Row="1" ListeningProgressSource="{Binding Path=Progress}" Height="6" MinWidth="200" Background="#22000000" HorizontalAlignment="Left"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Length" Width="45">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Text="{Binding Path=Duration,Converter={StaticResource DurationValueConverter}}"/>
+                                    <TextBlock Grid.Row="1" Text="{Binding Path=PercentsCompleted,Converter={StaticResource PercentsValueConverter}}" Opacity="0.25"/>
                                 </Grid>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>

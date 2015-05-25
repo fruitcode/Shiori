@@ -46,4 +46,33 @@ namespace Shiori
             throw new NotImplementedException();
         }
     }
+
+    public class DurationValueConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            uint min = (uint)value / 60000;
+            uint sec = (uint)value % 60000 / 1000;
+            return String.Format("{0}:{1}", min, sec);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class PercentsValueConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            int percents = (int)((double)value * 100);
+            return String.Format("{0}%", percents);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
