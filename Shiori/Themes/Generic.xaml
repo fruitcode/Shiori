@@ -4,9 +4,9 @@
     xmlns:converters="clr-namespace:Shiori.Converters"
     xmlns:local="clr-namespace:Shiori">
 
-    <converters:LeftPercentageConverter x:Key="LeftPercentageConverter"/>
-    <converters:RightPercentageConverter x:Key="RightPercentageConverter"/>
-    <converters:WidthPercentageConverter x:Key="WidthPercentageConverter"/>
+    <local:LeftPercentageConverter x:Key="LeftPercentageConverter"/>
+    <local:RightPercentageConverter x:Key="RightPercentageConverter"/>
+    <local:WidthPercentageConverter x:Key="WidthPercentageConverter"/>
 
     <Style TargetType="{x:Type local:TimeLine}">
         <Setter Property="Template">

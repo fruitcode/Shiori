@@ -60,6 +60,7 @@ namespace Shiori.Playlist
             }
 
             PlaylistElement emt = new PlaylistElement();
+            emt.PlaylistElementChanged += PlaylistElementChanged;
             emt.FilePath = filePath;
             UpdateMutualPath(filePath);
 
@@ -86,7 +87,7 @@ namespace Shiori.Playlist
             TStreamInfo streamInfo = new TStreamInfo();
             player.GetStreamInfo(ref streamInfo);
             emt.Duration = streamInfo.Length.ms;
-            emt.AddBookmark(0); // also, set IsSaved to false here
+            emt.AddBookmark(0);
 
             player.Close();
 
