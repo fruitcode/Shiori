@@ -48,7 +48,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:ListeningProgressBar}">
                     <Grid Background="{Binding Background,RelativeSource={RelativeSource TemplatedParent}}">
-                        <ItemsControl ItemsSource="{Binding ListeningProgressSource,RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="0">
+                        <ItemsControl ItemsSource="{Binding TrackSource.Progress,RelativeSource={RelativeSource TemplatedParent}}" Grid.Row="0">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Grid>

@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Shiori.Playlist
 {
-    class PlaylistElement : INotifyPropertyChanged
+    public class PlaylistElement : INotifyPropertyChanged
     {
         public String FilePath { get; set; }
         public String ArtistAlbum { get; set; }

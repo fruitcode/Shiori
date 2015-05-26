@@ -3,18 +3,26 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Shiori.Playlist;
 
 namespace Shiori
 {
     public class ListeningProgressBar : Control
     {
-        public static readonly DependencyProperty ListeningProgressSourceProperty =
-                DependencyProperty.Register("ListeningProgressSource", typeof(object), typeof(ListeningProgressBar), new PropertyMetadata(null));
+        public static readonly DependencyProperty TrackSourceProperty =
+                DependencyProperty.Register("TrackSource",
+                typeof(PlaylistElement), typeof(ListeningProgressBar),
+                new PropertyMetadata(null, new PropertyChangedCallback(OnTrackSourceChanged)));
 
-        public object ListeningProgressSource
+        public PlaylistElement TrackSource
         {
-            get { return (object)GetValue(ListeningProgressSourceProperty); }
-            set { SetValue(ListeningProgressSourceProperty, value); }
+            get { return (PlaylistElement)GetValue(TrackSourceProperty); }
+            set { SetValue(TrackSourceProperty, value); }
+        }
+
+        private static void OnTrackSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            //Console.WriteLine("TrackSourceChanged");
         }
 
         static ListeningProgressBar()

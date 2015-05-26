@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Shiori.Playlist
 {
-    class ListeningProgressRange
+    public class ListeningProgressRange
     {
         public uint Start { get; set; }
         [JsonIgnore]
