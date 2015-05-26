@@ -18,8 +18,6 @@ namespace Shiori.Playlist
         public int Tracknumber { get; set; }
 
         public ObservableCollection<ListeningProgressRange> Progress { get; set; }
-        [JsonIgnore]
-        private uint progressStart;
 
         public List<uint> Bookmarks { get; set; }
         [JsonIgnore]
@@ -157,11 +155,11 @@ namespace Shiori.Playlist
 
             bool progressChanged = FlattenListeningRange();
             OnPropertyChanged("CurrentListeningRange");
+            OnPropertyChanged("PercentsCompleted");
 
             if (progressChanged)
             {
                 OnPropertyChanged("self");
-                OnPropertyChanged("PercentsCompleted");
             }
         }
 
@@ -169,7 +167,9 @@ namespace Shiori.Playlist
         {
             UpdateListeningRange(t);
             Progress.Add(CurrentListeningRange);
+            _percentsCompleted += CurrentListeningRange.EndPercent - CurrentListeningRange.StartPercent;
             CurrentListeningRange = null;
+            OnPropertyChanged("PercentsCompleted");
         }
 
         private bool FlattenListeningRange()
@@ -203,7 +203,7 @@ namespace Shiori.Playlist
             foreach (var item in delete)
             {
                 Progress.Remove(item);
-                PercentsCompleted -= ((double)item.End - item.Start) / Duration;
+                _percentsCompleted -= ((double)item.End - item.Start) / Duration;
             }
 
             // return true if:
