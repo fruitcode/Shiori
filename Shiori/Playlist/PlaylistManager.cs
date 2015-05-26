@@ -40,15 +40,18 @@ namespace Shiori.Playlist
 
             foreach (var i in PlaylistElementsArray)
             {
-                i.PlaylistElementChanged += PlaylistElementChanged;
+                i.PropertyChanged += PlaylistElementChanged;
                 i.RegenerateBookmarkPercent();
                 i.RegeneratePercents();
             }
         }
 
-        void PlaylistElementChanged()
+        void PlaylistElementChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            IsSaved = false;
+            if (e.PropertyName == "this")
+            {
+                IsSaved = false;
+            }
         }
 
         public void AddFile(String filePath)
@@ -60,7 +63,7 @@ namespace Shiori.Playlist
             }
 
             PlaylistElement emt = new PlaylistElement();
-            emt.PlaylistElementChanged += PlaylistElementChanged;
+            emt.PropertyChanged += PlaylistElementChanged;
             emt.FilePath = filePath;
             UpdateMutualPath(filePath);
 

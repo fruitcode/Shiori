@@ -12,11 +12,6 @@ namespace Shiori.Playlist
 {
     class PlaylistElement : INotifyPropertyChanged
     {
-        public delegate void PlaylistElementChangedEventHandler();
-        public event PlaylistElementChangedEventHandler PlaylistElementChanged;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public String FilePath { get; set; }
         public String ArtistAlbum { get; set; }
         public String Title { get; set; }
@@ -38,10 +33,14 @@ namespace Shiori.Playlist
             Progress = new ObservableCollection<ListeningProgressRange>();
         }
 
-        private void OnPlaylistElementChanged()
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string name)
         {
-            if (PlaylistElementChanged != null)
-                PlaylistElementChanged();
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
         }
 
         public TStreamTime GetPreviousBookmark(TStreamTime t)
@@ -80,7 +79,7 @@ namespace Shiori.Playlist
 
             Bookmarks.Add(t);
             BookmarksPercents.Add(100.0 * t / Duration);
-            OnPlaylistElementChanged();
+            OnPropertyChanged("self");
         }
 
         public void RegenerateBookmarkPercent()
@@ -126,7 +125,7 @@ namespace Shiori.Playlist
 
             Progress.Add(pr);
             FlattenProgress();
-            OnPlaylistElementChanged();
+            OnPropertyChanged("self");
             progressStart = 0;
         }
 
@@ -174,10 +173,10 @@ namespace Shiori.Playlist
 
             PercentsCompleted = _percents;
             if (oldProgressCount != newProgress.Count) // if some ProgressRanges have been merged
-                OnPlaylistElementChanged();
-
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs("PercentsCompleted"));
+            {
+                OnPropertyChanged("self");
+                OnPropertyChanged("PercentsCompleted");
+            }
         }
     }
 }

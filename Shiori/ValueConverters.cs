@@ -53,7 +53,7 @@ namespace Shiori
         {
             uint min = (uint)value / 60000;
             uint sec = (uint)value % 60000 / 1000;
-            return String.Format("{0}:{1}", min, sec);
+            return String.Format("{0}:{1:D2}", min, sec);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
