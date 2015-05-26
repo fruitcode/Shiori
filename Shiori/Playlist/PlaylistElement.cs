@@ -25,8 +25,35 @@ namespace Shiori.Playlist
         [JsonIgnore]
         public ObservableCollection<double> BookmarksPercents { get; set; }
         public uint Duration { get; set; }
+
+        private double _percentsCompleted;
         [JsonIgnore]
-        public double PercentsCompleted { get; set; }
+        public double PercentsCompleted {
+            get
+            {
+                double currentPercents = CurrentListeningRange == null ? 0 : CurrentListeningRange.EndPercent - CurrentListeningRange.StartPercent;
+                return _percentsCompleted + currentPercents;
+            }
+            set
+            {
+                _percentsCompleted = value;
+            }
+        }
+
+        private ListeningProgressRange _currentListeningRange;
+        [JsonIgnore]
+        public ListeningProgressRange CurrentListeningRange
+        {
+            get
+            {
+                return _currentListeningRange;
+            }
+            set
+            {
+                _currentListeningRange = value;
+                OnPropertyChanged("CurrentListeningRange");
+            }
+        }
         
         public PlaylistElement()
         {
@@ -100,31 +127,56 @@ namespace Shiori.Playlist
                 foreach (var i in Progress)
                 {
                     _totalListened += i.End - i.Start;
-                    i.StartPercent = 100.0 * i.Start / Duration;
-                    i.EndPercent = 100.0 * i.End / Duration;
+                    i.StartPercent = (double)i.Start / Duration;
+                    i.EndPercent = (double)i.End / Duration;
                 }
             }
 
             PercentsCompleted = _totalListened / Duration;
         }
 
-        public void StartProgressRange(uint t)
+        public void StartListeningRange(uint t)
         {
-            progressStart = t;
+            if (CurrentListeningRange != null)
+                Progress.Add(CurrentListeningRange);
+
+            CurrentListeningRange = new ListeningProgressRange() { Start = t, StartPercent = (double)t / Duration };
         }
 
-        public void EndProgressRange(uint t)
+        public void UpdateListeningRange(uint t)
         {
-            ListeningProgressRange newRange = new ListeningProgressRange()
-            {
-                Start = progressStart,
-                StartPercent = 100.0 * progressStart / Duration,
-                End = t,
-                EndPercent = 100.0 * t / Duration
-            };
+            // if we have merged currentListeningRange and current position is not yet
+            // reached currentListeningRange.End position, so NO action required
+            if (CurrentListeningRange.End > t)
+                return;
 
+            uint start = CurrentListeningRange.Start, end = t;
+
+            CurrentListeningRange.End = t;
+            CurrentListeningRange.EndPercent = (double)t / Duration;
+
+            bool progressChanged = FlattenListeningRange();
+            OnPropertyChanged("CurrentListeningRange");
+
+            if (progressChanged)
+            {
+                OnPropertyChanged("self");
+                OnPropertyChanged("PercentsCompleted");
+            }
+        }
+
+        public void EndListeningRange(uint t)
+        {
+            UpdateListeningRange(t);
+            Progress.Add(CurrentListeningRange);
+            CurrentListeningRange = null;
+        }
+
+        private bool FlattenListeningRange()
+        {
             List<ListeningProgressRange> delete = new List<ListeningProgressRange>();
             Boolean merged = true;
+            Boolean progressChanged = false;
 
             while (merged == true)
             {
@@ -134,15 +186,13 @@ namespace Shiori.Playlist
                     if (delete.Contains(range)) // already merged with
                         continue;
 
-                    if (!(newRange.Start > range.End || newRange.End < range.Start)) // merge if intersects
+                    if (!(CurrentListeningRange.Start > range.End || CurrentListeningRange.End < range.Start)) // merge if intersects
                     {
-                        if (newRange.Start >= range.Start && newRange.End <= range.End) // range2 contains range1; no actions required
-                        {
-                            newRange = null;
-                            break;
-                        }
+                        // if currentListeningRange expands range after merging
+                        if (!progressChanged && (CurrentListeningRange.Start < range.Start || CurrentListeningRange.End > range.End))
+                            progressChanged = true;
 
-                        newRange.Merge(range);
+                        CurrentListeningRange.Merge(range);
                         delete.Add(range);
                         merged = true;
                         break;
@@ -150,22 +200,16 @@ namespace Shiori.Playlist
                 }
             }
 
-            if (newRange != null)
+            foreach (var item in delete)
             {
-                foreach (var item in delete)
-                {
-                    Progress.Remove(item);
-                    PercentsCompleted -= ((double)item.End - item.Start) / Duration;
-                }
-
-                Progress.Add(newRange);
-                PercentsCompleted += ((double)newRange.End - newRange.Start) / Duration;
-
-                OnPropertyChanged("self");
-                OnPropertyChanged("PercentsCompleted");
+                Progress.Remove(item);
+                PercentsCompleted -= ((double)item.End - item.Start) / Duration;
             }
 
-            progressStart = 0;
+            // return true if:
+            // 1) progressChanged = true (ie.: currentListeningRange was merged and expanded range)
+            // 2) currentListeningRange has no intersects with existing ranges
+            return progressChanged ? true : delete.Count == 0;
         }
     }
 }

@@ -142,12 +142,17 @@ namespace Shiori
         void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (ClosePlaylist() == false)
+            {
                 e.Cancel = true; // cancel exiting
+                return;
+            }
             globalHotkeys.Dispose();
         }
 
         private Boolean ClosePlaylist()
         {
+            StopUpdateTimer();
+
             if (player != null)
             {
                 FinishListeningRange();
@@ -177,8 +182,11 @@ namespace Shiori
 
         private void StopUpdateTimer()
         {
-            updateTimeLineTimer.Dispose();
-            updateTimeLineTimer = null;
+            if (updateTimeLineTimer != null)
+            {
+                updateTimeLineTimer.Dispose();
+                updateTimeLineTimer = null;
+            }
         }
 
         private void UpdateTimeLineValue(object state)
@@ -189,6 +197,7 @@ namespace Shiori
             _dispatcher.BeginInvoke(
                 DispatcherPriority.Normal, new Action(() =>
                 {
+                    playlistManager.CurrentElement.UpdateListeningRange(t.ms);
                     myTimeLine.Value = t.ms / (double)playlistManager.CurrentElement.Duration;
                 }
             ));
@@ -228,7 +237,7 @@ namespace Shiori
             // TODO: start from position where playback have been stopped last time
             if (player.StartPlayback())
             {
-                currentPlaylistElement.StartProgressRange(0);
+                currentPlaylistElement.StartListeningRange(0);
                 player.SetCallbackFunc(myZPlayCallbackFunction, (TCallbackMessage)TCallbackMessage.MsgStop, 0);
             } else {
                 Console.WriteLine("Unable to start playback: " + player.GetError());
@@ -257,7 +266,7 @@ namespace Shiori
             _dispatcher.BeginInvoke(
                 DispatcherPriority.Normal, new Action(() =>
                 {
-                    tmp.EndProgressRange(time.ms);
+                    tmp.EndListeningRange(time.ms);
                 }
             ));
 
@@ -272,14 +281,14 @@ namespace Shiori
             TStreamTime t = new TStreamTime();
             player.GetPosition(ref t);
 
-            currentPlaylistElement.EndProgressRange(t.ms);
+            currentPlaylistElement.EndListeningRange(t.ms);
         }
 
         private void StartListeningRange()
         {
             TStreamTime t = new TStreamTime();
             player.GetPosition(ref t);
-            currentPlaylistElement.StartProgressRange(t.ms);
+            currentPlaylistElement.StartListeningRange(t.ms);
         }
 
         private void PlaylistListBox_Drop(object sender, DragEventArgs e)

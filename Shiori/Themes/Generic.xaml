@@ -6,7 +6,9 @@
 
     <local:LeftPercentageConverter x:Key="LeftPercentageConverter"/>
     <local:RightPercentageConverter x:Key="RightPercentageConverter"/>
-    <local:WidthPercentageConverter x:Key="WidthPercentageConverter"/>
+    <local:RangeToLeftPercentageConverter x:Key="RangeToLeftPercentageConverter"/>
+    <local:RangeToRightPercentageConverter x:Key="RangeToRightPercentageConverter"/>
+    <local:RangeToWidthPercentageConverter x:Key="RangeToWidthPercentageConverter"/>
 
     <Style TargetType="{x:Type local:TimeLine}">
         <Setter Property="Template">
@@ -53,9 +55,9 @@
                                 <DataTemplate>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="{Binding StartPercent,Converter={StaticResource LeftPercentageConverter}}"/>
-                                            <ColumnDefinition Width="{Binding Converter={StaticResource WidthPercentageConverter}}"/>
-                                            <ColumnDefinition Width="{Binding EndPercent,Converter={StaticResource RightPercentageConverter}}"/>
+                                            <ColumnDefinition Width="{Binding Converter={StaticResource RangeToLeftPercentageConverter}}"/>
+                                            <ColumnDefinition Width="{Binding Converter={StaticResource RangeToWidthPercentageConverter}}"/>
+                                            <ColumnDefinition Width="{Binding Converter={StaticResource RangeToRightPercentageConverter}}"/>
                                         </Grid.ColumnDefinitions>
                                         <Border Grid.Column="1" BorderThickness="0" Background="Green" SnapsToDevicePixels="True" />
                                     </Grid>
@@ -67,6 +69,14 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="{Binding TrackSource.CurrentListeningRange,RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource RangeToLeftPercentageConverter}}"/>
+                                <ColumnDefinition Width="{Binding TrackSource.CurrentListeningRange,RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource RangeToWidthPercentageConverter}}"/>
+                                <ColumnDefinition Width="{Binding TrackSource.CurrentListeningRange,RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource RangeToRightPercentageConverter}}"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="1" BorderThickness="0" Background="Green" SnapsToDevicePixels="True" />
+                        </Grid>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

@@ -22,6 +22,7 @@ namespace Shiori
 
         private static void OnTrackSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            //PlaylistElement playlistElement = e.NewValue as PlaylistElement;
             //Console.WriteLine("TrackSourceChanged");
         }
 

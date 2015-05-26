@@ -33,12 +33,43 @@ namespace Shiori
         }
     }
 
-    public class WidthPercentageConverter : IValueConverter
+    public class RangeToLeftPercentageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            if (value == null) return new GridLength(0.0);
             ListeningProgressRange r = (ListeningProgressRange)value;
-            return new GridLength(r.EndPercent - r.StartPercent, GridUnitType.Star);
+            return new GridLength(100 * r.StartPercent, GridUnitType.Star);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class RangeToRightPercentageConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value == null) return new GridLength(100, GridUnitType.Star);
+            ListeningProgressRange r = (ListeningProgressRange)value;
+            return new GridLength(100 - (100 * r.EndPercent), GridUnitType.Star);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class RangeToWidthPercentageConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value == null) return new GridLength(0.0);
+            ListeningProgressRange r = (ListeningProgressRange)value;
+            return new GridLength(100 * (r.EndPercent - r.StartPercent), GridUnitType.Star);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
