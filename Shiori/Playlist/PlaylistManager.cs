@@ -62,6 +62,13 @@ namespace Shiori.Playlist
                 return;
             }
 
+            foreach (var element in PlaylistElementsArray)
+            {
+                // check if file is already in playlist
+                if (element.FilePath == filePath)
+                    return;
+            }
+
             PlaylistElement emt = new PlaylistElement();
             emt.PropertyChanged += PlaylistElementChanged;
             emt.FilePath = filePath;
