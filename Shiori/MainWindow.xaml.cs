@@ -394,6 +394,15 @@ namespace Shiori
 
         private void SaveMenuItem_Click(object sender, RoutedEventArgs e)
         {
+            // TODO: should not stop playback, but also should finish current ListeningRange and should not form a gap in progress
+            // (which will be caused by subsequential calls of FinishListeningRange and StartListeningRange)
+            if (player != null)
+            {
+                FinishListeningRange();
+                currentPlaylistElement = null;
+                player.StopPlayback();
+            }
+
             playlistManager.Save(false);
         }
     }

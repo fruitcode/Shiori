@@ -48,7 +48,7 @@ namespace Shiori.Playlist
 
         void PlaylistElementChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "this")
+            if (e.PropertyName == "self")
             {
                 IsSaved = false;
             }
@@ -107,9 +107,7 @@ namespace Shiori.Playlist
 
         public Boolean Save(Boolean showFileDialog = true)
         {
-            foreach (var item in PlaylistElementsArray)
-                item.FlattenProgress();
-
+            // TODO: ensure that current listening range is finished/flushed
             if (IsSaved) return true;
 
             String savePath = _playlistPath;

@@ -115,7 +115,7 @@ namespace Shiori.Playlist
 
         public void EndProgressRange(uint t)
         {
-            ListeningProgressRange pr = new ListeningProgressRange()
+            ListeningProgressRange newRange = new ListeningProgressRange()
             {
                 Start = progressStart,
                 StartPercent = 100.0 * progressStart / Duration,
@@ -123,60 +123,49 @@ namespace Shiori.Playlist
                 EndPercent = 100.0 * t / Duration
             };
 
-            Progress.Add(pr);
-            FlattenProgress();
-            OnPropertyChanged("self");
-            progressStart = 0;
-        }
+            List<ListeningProgressRange> delete = new List<ListeningProgressRange>();
+            Boolean merged = true;
 
-        public void FlattenProgress()
-        {
-            if (Progress == null)
-                return;
-
-            var oldProgress = Progress;
-            int oldProgressCount = oldProgress.Count;
-            var newProgress = new ObservableCollection<ListeningProgressRange>();
-            List<ListeningProgressRange> deleteFromList;
-            double _percents = 0;
-
-            while (oldProgress.Count > 0)
+            while (merged == true)
             {
-                ListeningProgressRange range1 = oldProgress[0];
-
-                deleteFromList = new List<ListeningProgressRange>();
-                deleteFromList.Add(range1);
-                // if some ListeningProgressRanges have been merged in current step,
-                // we have items to delete from 'oldProgress' array and we should iterate
-                // through this array one more time to check if we can merge more items
-                while (deleteFromList.Count > 0)
+                merged = false;
+                foreach (var range in Progress)
                 {
-                    foreach (var r in deleteFromList)
-                        oldProgress.Remove(r);
-                    deleteFromList.Clear();
+                    if (delete.Contains(range)) // already merged with
+                        continue;
 
-                    foreach (var range2 in oldProgress)
-                        if (!(range1.Start > range2.End || range1.End < range2.Start)) // merge if intersects
+                    if (!(newRange.Start > range.End || newRange.End < range.Start)) // merge if intersects
+                    {
+                        if (newRange.Start >= range.Start && newRange.End <= range.End) // range2 contains range1; no actions required
                         {
-                            range1.Merge(range2);
-                            deleteFromList.Add(range2);
+                            newRange = null;
+                            break;
                         }
-                }
 
-                newProgress.Add(range1);
-                _percents += ((double)range1.End - range1.Start) / Duration;
+                        newRange.Merge(range);
+                        delete.Add(range);
+                        merged = true;
+                        break;
+                    }
+                }
             }
 
-            Progress.Clear();
-            foreach (var item in newProgress)
-                Progress.Add(item);
-
-            PercentsCompleted = _percents;
-            if (oldProgressCount != newProgress.Count) // if some ProgressRanges have been merged
+            if (newRange != null)
             {
+                foreach (var item in delete)
+                {
+                    Progress.Remove(item);
+                    PercentsCompleted -= ((double)item.End - item.Start) / Duration;
+                }
+
+                Progress.Add(newRange);
+                PercentsCompleted += ((double)newRange.End - newRange.Start) / Duration;
+
                 OnPropertyChanged("self");
                 OnPropertyChanged("PercentsCompleted");
             }
+
+            progressStart = 0;
         }
     }
 }
