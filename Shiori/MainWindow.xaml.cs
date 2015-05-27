@@ -141,7 +141,7 @@ namespace Shiori
 
         void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (ClosePlaylist() == false)
+            if (ClosePlaylist(true, false) == false)
             {
                 e.Cancel = true; // cancel exiting
                 return;
@@ -149,7 +149,7 @@ namespace Shiori
             globalHotkeys.Dispose();
         }
 
-        private Boolean ClosePlaylist()
+        private Boolean ClosePlaylist(Boolean showAlert, Boolean showFileDialog)
         {
             StopUpdateTimer();
 
@@ -160,7 +160,7 @@ namespace Shiori
                 player.StopPlayback();
             }
 
-            return playlistManager.Save();
+            return playlistManager.Save(showAlert, showFileDialog);
         }
 
         void myTimeLine_PositionChanged(object sender, PositionChangedEventArgs e)
@@ -308,7 +308,7 @@ namespace Shiori
                 {
                     if (f.IndexOf(".shiori") == f.Length - 7 && f.Length > 7)
                     {
-                        if (ClosePlaylist() == false)
+                        if (ClosePlaylist(true, false) == false)
                             break;
                         playlistManager = new PlaylistManager(f);
                         BindPlaylist();
@@ -411,14 +411,12 @@ namespace Shiori
         {
             // TODO: should not stop playback, but also should finish current ListeningRange and should not form a gap in progress
             // (which will be caused by subsequential calls of FinishListeningRange and StartListeningRange)
-            if (player != null)
-            {
-                FinishListeningRange();
-                currentPlaylistElement = null;
-                player.StopPlayback();
-            }
+            ClosePlaylist(false, false);
+        }
 
-            playlistManager.Save(false);
+        private void SaveAsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ClosePlaylist(false, true);
         }
     }
 }

@@ -40,7 +40,7 @@
                 <MenuItem Header="_New" IsEnabled="False"/>
                 <MenuItem Header="_Open..." IsEnabled="False"/>
                 <MenuItem Header="_Save" x:Name="SaveMenuItem" Click="SaveMenuItem_Click"/>
-                <MenuItem Header="Save _As..." IsEnabled="False"/>
+                <MenuItem Header="Save _As..." x:Name="SaveAsMenuItem" Click="SaveAsMenuItem_Click" />
             </MenuItem>
             <MenuItem Header="_Help"/>
         </Menu>

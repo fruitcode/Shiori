@@ -105,14 +105,14 @@ namespace Shiori.Playlist
             IsSaved = false;
         }
 
-        public Boolean Save(Boolean showFileDialog = true)
+        public Boolean Save(Boolean showAlert, Boolean showFileDialog)
         {
             // TODO: ensure that current listening range is finished/flushed
             if (IsSaved) return true;
 
             String savePath = _playlistPath;
 
-            if (showFileDialog)
+            if (showAlert)
             {
                 MessageBoxResult result = MessageBox.Show("Do you want to save changes of playlist?", "Shiori", MessageBoxButton.YesNoCancel);
                 if (result == MessageBoxResult.No)
