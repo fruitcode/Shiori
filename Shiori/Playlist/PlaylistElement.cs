@@ -148,8 +148,6 @@ namespace Shiori.Playlist
             if (CurrentListeningRange.End > t)
                 return;
 
-            uint start = CurrentListeningRange.Start, end = t;
-
             CurrentListeningRange.End = t;
             CurrentListeningRange.EndPercent = (double)t / Duration;
 

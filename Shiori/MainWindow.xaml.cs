@@ -177,7 +177,7 @@ namespace Shiori
         private void StartUpdateTimer()
         {
             if (updateTimeLineTimer == null)
-                updateTimeLineTimer = new Timer(UpdateTimeLineValue, null, 0, 500);
+                updateTimeLineTimer = new Timer(UpdateTimeLineValue, null, 0, 200);
         }
 
         private void StopUpdateTimer()
@@ -197,8 +197,11 @@ namespace Shiori
             _dispatcher.BeginInvoke(
                 DispatcherPriority.Normal, new Action(() =>
                 {
-                    playlistManager.CurrentElement.UpdateListeningRange(t.ms);
-                    myTimeLine.Value = t.ms / (double)playlistManager.CurrentElement.Duration;
+                    if (currentPlaylistElement != null)
+                    {
+                        currentPlaylistElement.UpdateListeningRange(t.ms);
+                        myTimeLine.Value = t.ms / (double)currentPlaylistElement.Duration;
+                    }
                 }
             ));
         }
@@ -286,6 +289,9 @@ namespace Shiori
 
         private void StartListeningRange()
         {
+            if (currentPlaylistElement == null)
+                return;
+
             TStreamTime t = new TStreamTime();
             player.GetPosition(ref t);
             currentPlaylistElement.StartListeningRange(t.ms);
