@@ -138,7 +138,13 @@ namespace Shiori.Playlist
             if (CurrentListeningRange != null)
                 Progress.Add(CurrentListeningRange);
 
-            CurrentListeningRange = new ListeningProgressRange() { Start = t, StartPercent = (double)t / Duration };
+            CurrentListeningRange = new ListeningProgressRange()
+            {
+                Start = t,
+                StartPercent = (double)t / Duration,
+                End = t,
+                EndPercent = (double)t / Duration
+            };
         }
 
         public void UpdateListeningRange(uint t)
