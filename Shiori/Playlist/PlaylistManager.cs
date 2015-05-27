@@ -121,7 +121,7 @@ namespace Shiori.Playlist
                     return false;
             }
 
-            if (showFileDialog || !(new FileInfo(_playlistPath)).Exists)
+            if (showFileDialog || _playlistPath == null || !(new FileInfo(_playlistPath)).Exists)
             {
                 var saveFileDialog = new Microsoft.Win32.SaveFileDialog();
                 saveFileDialog.Filter = "Shiori playlist (*.shiori)|*.shiori";

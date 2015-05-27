@@ -418,5 +418,13 @@ namespace Shiori
         {
             ClosePlaylist(false, true);
         }
+
+        private void NewPlaylistMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ClosePlaylist(true, false);
+
+            playlistManager = new PlaylistManager();
+            BindPlaylist();
+        }
     }
 }
