@@ -426,5 +426,13 @@ namespace Shiori
             playlistManager = new PlaylistManager();
             BindPlaylist();
         }
+
+        private void ManageBookmarksMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            BookmarksWindow bookmarksWindow = new BookmarksWindow();
+            bookmarksWindow.BookmarksList = currentPlaylistElement.Bookmarks;
+
+            bookmarksWindow.ShowDialog();
+        }
     }
 }

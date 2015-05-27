@@ -42,6 +42,13 @@
                 <MenuItem Header="_Save" x:Name="SaveMenuItem" Click="SaveMenuItem_Click"/>
                 <MenuItem Header="Save _As..." x:Name="SaveAsMenuItem" Click="SaveAsMenuItem_Click" />
             </MenuItem>
+            <MenuItem Header="_Bookmarks">
+                <MenuItem Header="_Add" IsEnabled="False"/>
+                <MenuItem Header="Go to _Previous" IsEnabled="False"/>
+                <MenuItem Header="Go to _Next" IsEnabled="False"/>
+                <Separator/>
+                <MenuItem Header="_Manage" x:Name="ManageBookmarksMenuItem" Click="ManageBookmarksMenuItem_Click" />
+            </MenuItem>
             <MenuItem Header="_Help"/>
         </Menu>
 

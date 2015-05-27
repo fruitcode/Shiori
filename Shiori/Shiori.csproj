@@ -62,6 +62,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BookmarksWindow.xaml.cs">
+      <DependentUpon>BookmarksWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Lib\KeyboardHook.cs" />
     <Compile Include="ListeningProgressBar.cs" />
     <Compile Include="Playlist\ListeningProgressRange.cs" />
@@ -70,6 +73,10 @@
     <Compile Include="Playlist\PlaylistManager.cs" />
     <Compile Include="TimeLine.cs" />
     <Compile Include="ValueConverters.cs" />
+    <Page Include="BookmarksWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
