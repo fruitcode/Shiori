@@ -24,7 +24,7 @@ namespace Shiori
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return new GridLength(100 - System.Convert.ToDouble(value), GridUnitType.Star);
+            return new GridLength(1 - System.Convert.ToDouble(value), GridUnitType.Star);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -39,7 +39,7 @@ namespace Shiori
         {
             if (value == null) return new GridLength(0.0);
             ListeningProgressRange r = (ListeningProgressRange)value;
-            return new GridLength(100 * r.StartPercent, GridUnitType.Star);
+            return new GridLength(r.StartPercent, GridUnitType.Star);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -54,7 +54,7 @@ namespace Shiori
         {
             if (value == null) return new GridLength(100, GridUnitType.Star);
             ListeningProgressRange r = (ListeningProgressRange)value;
-            return new GridLength(100 - (100 * r.EndPercent), GridUnitType.Star);
+            return new GridLength(1 - r.EndPercent, GridUnitType.Star);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -69,7 +69,7 @@ namespace Shiori
         {
             if (value == null) return new GridLength(0.0);
             ListeningProgressRange r = (ListeningProgressRange)value;
-            return new GridLength(100 * (r.EndPercent - r.StartPercent), GridUnitType.Star);
+            return new GridLength(r.EndPercent - r.StartPercent, GridUnitType.Star);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

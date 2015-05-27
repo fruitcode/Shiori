@@ -103,7 +103,7 @@ namespace Shiori.Playlist
             }
 
             Bookmarks.Add(t);
-            BookmarksPercents.Add(100.0 * t / Duration);
+            BookmarksPercents.Add((double)t / Duration);
             OnPropertyChanged("self");
         }
 
@@ -113,7 +113,7 @@ namespace Shiori.Playlist
 
             foreach (var i in Bookmarks)
             {
-                BookmarksPercents.Add(100.0 * i / Duration);
+                BookmarksPercents.Add((double)i / Duration);
             }
         }
 
