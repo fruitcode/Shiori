@@ -41,7 +41,6 @@ namespace Shiori.Playlist
             foreach (var i in PlaylistElementsArray)
             {
                 i.PropertyChanged += PlaylistElementChanged;
-                i.RegenerateBookmarkPercent();
                 i.RegeneratePercents();
             }
         }

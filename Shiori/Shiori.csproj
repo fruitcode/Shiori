@@ -67,6 +67,7 @@
     </Compile>
     <Compile Include="Lib\KeyboardHook.cs" />
     <Compile Include="ListeningProgressBar.cs" />
+    <Compile Include="Playlist\Bookmark.cs" />
     <Compile Include="Playlist\ListeningProgressRange.cs" />
     <Compile Include="Lib\SimpleCommand.cs" />
     <Compile Include="Playlist\PlaylistElement.cs" />

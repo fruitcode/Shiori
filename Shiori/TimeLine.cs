@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Shiori.Playlist;
 
 namespace Shiori
 {
@@ -35,11 +36,12 @@ namespace Shiori
         }
 
         public static readonly DependencyProperty BookmarksSourceProperty =
-                DependencyProperty.Register("BookmarksSource", typeof(object), typeof(TimeLine), new PropertyMetadata(null));
+                DependencyProperty.Register("BookmarksSource",
+                typeof(IEnumerable<Bookmark>), typeof(TimeLine), new PropertyMetadata(null));
 
-        public object BookmarksSource
+        public IEnumerable<Bookmark> BookmarksSource
         {
-            get { return (object)GetValue(BookmarksSourceProperty); }
+            get { return (IEnumerable<Bookmark>)GetValue(BookmarksSourceProperty); }
             set { SetValue(BookmarksSourceProperty, value); }
         }
 

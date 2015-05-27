@@ -17,12 +17,10 @@ namespace Shiori.Playlist
         public String Title { get; set; }
         public int Tracknumber { get; set; }
 
-        public ObservableCollection<ListeningProgressRange> Progress { get; set; }
-
-        public List<uint> Bookmarks { get; set; }
-        [JsonIgnore]
-        public ObservableCollection<double> BookmarksPercents { get; set; }
         public uint Duration { get; set; }
+
+        public ObservableCollection<Bookmark> Bookmarks { get; set; }
+        public ObservableCollection<ListeningProgressRange> Progress { get; set; }
 
         private double _percentsCompleted;
         [JsonIgnore]
@@ -75,8 +73,8 @@ namespace Shiori.Playlist
 
             foreach (var i in Bookmarks)
             {
-                if (i > max && i < current)
-                    max = i;
+                if (i.Time > max && i.Time < current)
+                    max = i.Time;
             }
             return new TStreamTime() { ms = max };
         }
@@ -88,8 +86,8 @@ namespace Shiori.Playlist
 
             foreach (var i in Bookmarks)
             {
-                if (i < min && i > current)
-                    min = i;
+                if (i.Time < min && i.Time > current)
+                    min = i.Time;
             }
             return new TStreamTime() { ms = min };
         }
@@ -97,28 +95,23 @@ namespace Shiori.Playlist
         public void AddBookmark(uint t)
         {
             if (Bookmarks == null)
-            {
-                Bookmarks = new List<uint>();
-                BookmarksPercents = new ObservableCollection<double>();
-            }
+                Bookmarks = new ObservableCollection<Bookmark>();
 
-            Bookmarks.Add(t);
-            BookmarksPercents.Add((double)t / Duration);
+            Bookmarks.Add(new Bookmark() {
+                Time = t,
+                Percent = (double)t / Duration
+            });
             OnPropertyChanged("self");
-        }
-
-        public void RegenerateBookmarkPercent()
-        {
-            BookmarksPercents = new ObservableCollection<double>();
-
-            foreach (var i in Bookmarks)
-            {
-                BookmarksPercents.Add((double)i / Duration);
-            }
         }
 
         public void RegeneratePercents()
         {
+            if (Bookmarks != null)
+            {
+                foreach (var i in Bookmarks)
+                    i.Percent = (double)i.Time / Duration;
+            }
+
             double _totalListened = 0;
 
             if (Progress != null) {

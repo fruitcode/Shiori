@@ -23,12 +23,11 @@
                                 <DataTemplate>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="{Binding Converter={StaticResource LeftPercentageConverter}}"/>
-                                            <ColumnDefinition Width="{Binding Converter={StaticResource RightPercentageConverter}}"/>
+                                            <ColumnDefinition Width="{Binding Percent,Converter={StaticResource LeftPercentageConverter}}"/>
+                                            <ColumnDefinition Width="{Binding Percent,Converter={StaticResource RightPercentageConverter}}"/>
                                         </Grid.ColumnDefinitions>
                                         <Border Grid.Column="1" Width="2" Height="6" HorizontalAlignment="Left" BorderThickness="1, 0, 1, 0" BorderBrush="Black" SnapsToDevicePixels="True" />
                                     </Grid>
-                                    <!--<Border Grid.Row="1" Width="2" Height="6" Margin="{Binding Converter={StaticResource IntToMarginConverter}}" Tag="{Binding Tag}" HorizontalAlignment="Left" BorderThickness="1, 0, 1, 0" Background="Black" BorderBrush="Black" SnapsToDevicePixels="True" />-->
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                             <ItemsControl.ItemsPanel>

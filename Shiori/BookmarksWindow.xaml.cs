@@ -5,12 +5,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Collections.ObjectModel;
+using Shiori.Playlist;
 
 namespace Shiori
 {
     public partial class BookmarksWindow : Window
     {
-        public List<uint> BookmarksList;
+        public ObservableCollection<Bookmark> BookmarksList;
 
         public BookmarksWindow()
         {

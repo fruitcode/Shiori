@@ -11,7 +11,7 @@
         <ListView x:Name="BookmarksListBox" SelectionMode="Extended">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Time" Width="50" DisplayMemberBinding="{Binding Converter={StaticResource DurationValueConverter}}"/>
+                    <GridViewColumn Header="Time" Width="50" DisplayMemberBinding="{Binding Time,Converter={StaticResource DurationValueConverter}}"/>
                     <GridViewColumn Header="Title" Width="215">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
