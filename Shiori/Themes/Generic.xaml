@@ -15,7 +15,7 @@
                 <ControlTemplate TargetType="{x:Type local:TimeLine}">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="6"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <ItemsControl ItemsSource="{Binding BookmarksSource,RelativeSource={RelativeSource TemplatedParent}}" x:Name="test" Grid.Row="0">

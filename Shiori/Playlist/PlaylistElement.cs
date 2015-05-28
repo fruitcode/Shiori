@@ -104,6 +104,12 @@ namespace Shiori.Playlist
             OnPropertyChanged("self");
         }
 
+        public void DeleteBookmark(Bookmark bookmark)
+        {
+            Bookmarks.Remove(bookmark);
+            OnPropertyChanged("self");
+        }
+
         public void RegeneratePercents()
         {
             if (Bookmarks != null)

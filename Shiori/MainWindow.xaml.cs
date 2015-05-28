@@ -430,7 +430,7 @@ namespace Shiori
         private void ManageBookmarksMenuItem_Click(object sender, RoutedEventArgs e)
         {
             BookmarksWindow bookmarksWindow = new BookmarksWindow();
-            bookmarksWindow.BookmarksList = currentPlaylistElement.Bookmarks;
+            bookmarksWindow.CurrentPlaylistElement = currentPlaylistElement;
 
             bookmarksWindow.ShowDialog();
         }
