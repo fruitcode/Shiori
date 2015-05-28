@@ -97,7 +97,15 @@ namespace Shiori.Playlist
             if (Bookmarks == null)
                 Bookmarks = new ObservableCollection<Bookmark>();
 
-            Bookmarks.Add(new Bookmark() {
+            int idx = 0;
+            for (idx = 0; idx < Bookmarks.Count; idx++)
+            {
+                if (t < Bookmarks[idx].Time)
+                    break;
+            }
+
+            Bookmarks.Insert(idx, new Bookmark()
+            {
                 Time = t,
                 Percent = (double)t / Duration
             });
