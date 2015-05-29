@@ -91,16 +91,12 @@ namespace Shiori
             switch (e.Key)
             {
                 case Key.J: // backward 5 seconds
-                    FinishListeningRange();
-                    t = new TStreamTime() { sec = 5 };
-                    player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromCurrentBackward);
-                    StartListeningRange();
+                    t = new TStreamTime() { ms = 5000 };
+                    PlayerSeekTo(t, TSeekMethod.smFromCurrentBackward);
                     break;
                 case Key.K: // forward 10 seconds
-                    FinishListeningRange();
-                    t = new TStreamTime() { sec = 10 };
-                    player.Seek(TTimeFormat.tfSecond, ref t, TSeekMethod.smFromCurrentForward);
-                    StartListeningRange();
+                    t = new TStreamTime() { ms = 10000 };
+                    PlayerSeekTo(t, TSeekMethod.smFromCurrentForward);
                     break;
                 case Key.M: // add bookmark
                     t = new TStreamTime();
@@ -108,35 +104,55 @@ namespace Shiori
                     playlistManager.CurrentElement.AddBookmark(t.ms);
                     break;
                 case Key.H: // go to previous bookmark
-                    FinishListeningRange();
                     t = new TStreamTime();
                     player.GetPosition(ref t);
                     t = playlistManager.CurrentElement.GetPreviousBookmark(t);
-                    player.Seek(TTimeFormat.tfMillisecond, ref t, TSeekMethod.smFromBeginning);
-                    StartListeningRange();
+                    PlayerSeekTo(t, TSeekMethod.smFromBeginning);
                     break;
                 case Key.L: // go to next bookmark
-                    FinishListeningRange();
                     t = new TStreamTime();
                     player.GetPosition(ref t);
                     t = playlistManager.CurrentElement.GetNextBookmark(t);
-                    player.Seek(TTimeFormat.tfMillisecond, ref t, TSeekMethod.smFromBeginning);
-                    StartListeningRange();
+                    PlayerSeekTo(t, TSeekMethod.smFromBeginning);
                     break;
                 case Key.U:
-                    TStreamStatus s = new TStreamStatus();
-                    player.GetStatus(ref s);
-                    if (s.fPause) {
-                        player.ResumePlayback();
-                        StartUpdateTimer();
-                    } else if (s.fPlay) {
+                    if (GetPlayerState() == PlayerState.Play)
+                    {
                         player.PausePlayback();
                         StopUpdateTimer();
+                    }
+                    else
+                    {
+                        player.ResumePlayback();
+                        StartUpdateTimer();
                     }
                     break;
                 default:
                     break;
             }
+        }
+
+        void myTimeLine_PositionChanged(object sender, PositionChangedEventArgs e)
+        {
+            if (player != null)
+            {
+                TStreamTime newPos = new TStreamTime() { ms = (uint)(currentPlaylistElement.Duration * e.NewValue) };
+                PlayerSeekTo(newPos, TSeekMethod.smFromBeginning);
+            }
+        }
+
+        private void PlayerSeekTo(TStreamTime t, TSeekMethod method)
+        {
+            Console.WriteLine(">>> {0}", t.ms);
+            PlayerState state = GetPlayerState();
+            FinishListeningRange();
+            player.Seek(TTimeFormat.tfMillisecond, ref t, method);
+            myTimeLine.Value = (double)t.ms / currentPlaylistElement.Duration;
+            // for some reason, zPlay will resume playing after seeking
+            // and it will leave its 'state' as 'paused'
+            if (state != PlayerState.Play)
+                player.PausePlayback();
+            StartListeningRange();
         }
 
         void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -161,17 +177,6 @@ namespace Shiori
             }
 
             return playlistManager.Save(showAlert, showFileDialog);
-        }
-
-        void myTimeLine_PositionChanged(object sender, PositionChangedEventArgs e)
-        {
-            if (player != null)
-            {
-                FinishListeningRange();
-                TStreamTime newPos = new TStreamTime() { ms = (uint)(playlistManager.CurrentElement.Duration * e.NewValue) };
-                player.Seek(TTimeFormat.tfMillisecond, ref newPos, TSeekMethod.smFromBeginning);
-                StartListeningRange();
-            }
         }
 
         private void StartUpdateTimer()
@@ -328,6 +333,31 @@ namespace Shiori
             System.Windows.Data.CollectionView myView = (System.Windows.Data.CollectionView)System.Windows.Data.CollectionViewSource.GetDefaultView(PlaylistListBox.ItemsSource);
             myView.GroupDescriptions.Clear();
             myView.GroupDescriptions.Add(new System.Windows.Data.PropertyGroupDescription("ArtistAlbum"));
+        }
+
+        private enum PlayerState
+        {
+            Play,
+            Pause,
+            Stop
+        }
+
+        private PlayerState GetPlayerState()
+        {
+            TStreamStatus s = new TStreamStatus();
+            player.GetStatus(ref s);
+            if (s.fPlay)
+            {
+                return PlayerState.Play;
+            }
+            else if (s.fPause)
+            {
+                return PlayerState.Pause;
+            }
+            else
+            {
+                return PlayerState.Stop;
+            }
         }
 
         private void MoveFilesUp(Object _o)

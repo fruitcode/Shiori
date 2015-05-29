@@ -31,6 +31,8 @@ namespace Shiori
 
         void BookmarksWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            this.Title = CurrentPlaylistElement.Title + " - Bookmarks";
+
             BookmarksListBox.ItemsSource = CurrentPlaylistElement.Bookmarks;
 
             KeyBinding kbDelete = new KeyBinding(new SimpleCommand(DeleteFiles, null), Key.Delete, ModifierKeys.None);
